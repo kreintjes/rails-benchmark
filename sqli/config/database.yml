@@ -15,9 +15,9 @@
 development:
   adapter: postgresql
   encoding: unicode
-  database: sqli_development
+  database: benchmark_sqli_development
   pool: 5
-  username: sqli
+  username: kevin
   password:
 
   # Connect on a TCP socket. Omitted by default since the client uses a
@@ -41,15 +41,15 @@ development:
 test:
   adapter: postgresql
   encoding: unicode
-  database: sqli_test
+  database: benchmark_sqli_test
   pool: 5
-  username: sqli
+  username: kevin
   password:
 
 production:
   adapter: postgresql
   encoding: unicode
-  database: sqli_production
+  database: benchmark_sqli_production
   pool: 5
-  username: sqli
+  username: kevin
   password:

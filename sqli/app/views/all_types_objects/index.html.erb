@@ -1,0 +1,43 @@
+<h1>Listing all_types_objects</h1>
+
+<table>
+  <tr>
+    <th>Binary col</th>
+    <th>Boolean col</th>
+    <th>Date col</th>
+    <th>Datetime col</th>
+    <th>Decimal col</th>
+    <th>Float col</th>
+    <th>Integer col</th>
+    <th>String col</th>
+    <th>Text col</th>
+    <th>Time col</th>
+    <th>Timestamp col</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @all_types_objects.each do |all_types_object| %>
+  <tr>
+    <td><%= all_types_object.binary_col %></td>
+    <td><%= all_types_object.boolean_col %></td>
+    <td><%= all_types_object.date_col %></td>
+    <td><%= all_types_object.datetime_col %></td>
+    <td><%= all_types_object.decimal_col %></td>
+    <td><%= all_types_object.float_col %></td>
+    <td><%= all_types_object.integer_col %></td>
+    <td><%= all_types_object.string_col %></td>
+    <td><%= all_types_object.text_col %></td>
+    <td><%= all_types_object.time_col %></td>
+    <td><%= all_types_object.timestamp_col %></td>
+    <td><%= link_to 'Show', all_types_object %></td>
+    <td><%= link_to 'Edit', edit_all_types_object_path(all_types_object) %></td>
+    <td><%= link_to 'Destroy', all_types_object, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New All types object', new_all_types_object_path %>

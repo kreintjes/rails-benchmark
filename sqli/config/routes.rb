@@ -1,4 +1,14 @@
 Sqli::Application.routes.draw do
+  get "create_test/new"
+
+  match "create_test/create", :controller => 'create_test', :action => 'create', :via => 'post'
+
+  root :to => 'home#index'
+
+  get "home/index"
+
+  resources :all_types_objects
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
