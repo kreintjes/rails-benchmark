@@ -2,6 +2,25 @@
 <p>
   Benchmark tests:
   <ul>
-    <li><%= link_to "Create test", create_test_new_path %></li>
+    <li>Create tests:
+      <ul>
+        <li><%= link_to "Create test", create_test_new_path %></li>
+        <li>Rails does not support multiple create at once. Remove this test?<%#= link_to "Create multiple test", create_test_new_multiple_path %></li>
+      </ul>
+    </li>
+    <li>Read tests:
+      <ul>
+        <li>TODO</li>
+      </ul>
+    </li>
+    <li>Update tests:
+      <ul>
+        <li>Update test:
+          <% AllTypesObject.all.each do |ato| %>
+            <%= link_to ato.id, update_test_edit_path(ato) %>
+          <% end %>
+      </li>
+      </ul>
+    </li>
   </ul>
 </p>

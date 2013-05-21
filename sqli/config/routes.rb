@@ -1,11 +1,14 @@
 Sqli::Application.routes.draw do
-  get "create_test/new"
-
-  match "create_test/create", :controller => 'create_test', :action => 'create', :via => 'post'
-
+  get "home/index"
   root :to => 'home#index'
 
-  get "home/index"
+  get "create_test/new"
+  match "create_test/create", :controller => 'create_test', :action => 'create', :via => 'post'
+  get "create_test/new_multiple"
+  match "create_test/create_multiple", :controller => 'create_test', :action => 'create_multiple', :via => 'post'
+
+  match "update_test/edit/:id", :controller => 'update_test', :action => 'edit', :via => 'get', :as => 'update_test_edit'
+  match "update_test/update/:id", :controller => 'update_test', :action => 'update', :via => 'put', :as => 'update_test_update'
 
   resources :all_types_objects
 
