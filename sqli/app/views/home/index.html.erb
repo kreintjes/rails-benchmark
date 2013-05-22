@@ -2,25 +2,34 @@
 <p>
   Benchmark tests:
   <ul>
-    <li>Create tests:
+    <% @tests.each do |cat, actions| %>
+    <li><%= cat.humanize.pluralize %>
       <ul>
-        <li><%= link_to "Create test", create_test_new_path %></li>
-        <li>Rails does not support multiple create at once. Remove this test?<%#= link_to "Create multiple test", create_test_new_multiple_path %></li>
+        <% actions.each do |action, methods| %>
+        <li><%= action.humanize %>:
+          <ul>
+            <% methods.each do |method| %>
+            <% if action.index("object") %>
+              <li><%= method.humanize %>:
+                <% @objects.each do |obj| %>
+                <%= link_to obj.id, self.send("#{cat}_#{action}_path", obj, method) %>
+                <% end %>
+              </li>
+            <% elsif method.index("create_array") %>
+              <li><%= method.humanize %>:
+                <% @amounts.each do |amount| %>
+                <%= link_to amount, self.send("#{cat}_#{action}_path", method, amount) %>
+                <% end %>
+              </li>
+            <% else %>
+              <li><%= link_to method.humanize, self.send("#{cat}_#{action}_path", method) %></li>
+            <% end %>
+            <% end %>
+          </ul>
+        </li>
+        <% end %>
       </ul>
     </li>
-    <li>Read tests:
-      <ul>
-        <li>TODO</li>
-      </ul>
-    </li>
-    <li>Update tests:
-      <ul>
-        <li>Update test:
-          <% AllTypesObject.all.each do |ato| %>
-            <%= link_to ato.id, update_test_edit_path(ato) %>
-          <% end %>
-      </li>
-      </ul>
-    </li>
+    <% end %>
   </ul>
 </p>

@@ -1,0 +1,10 @@
+<h1><%= params[:controller].humanize %> - <%= params[:action].humanize %> - <%= params[:method].humanize %> - Object <%= @all_types_object.id %></h1>
+
+<%= form_for(@all_types_object, :url => update_test_object_multi_update_path(@all_types_object, params[:method])) do |f| %>
+  <%= render 'all_types_objects/fields', :f => f %>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
+
+<%= link_to 'Root', root_path %>

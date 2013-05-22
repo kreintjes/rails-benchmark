@@ -1,0 +1,6 @@
+<p id="notice"><%= notice %></p>
+
+<%= render :partial => 'all_types_objects/show', :collection => [@all_types_object].flatten, :as => :all_types_object %>
+
+<%= link_to 'Back', create_test_class_new_path(params[:method]) %>
+<%= link_to 'Root', root_path %>
