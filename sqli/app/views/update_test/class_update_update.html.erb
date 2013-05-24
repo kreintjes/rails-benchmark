@@ -1,8 +1,5 @@
-<p id="notice"><%= notice %></p>
-
 <% [@all_types_object].flatten.each do |all_types_object| %>
   <%= render 'all_types_objects/show', :all_types_object => all_types_object %>
 <% end %>
 
 <%= link_to 'Back', update_test_class_update_edit_path(params[:method]) %>
-<%= link_to 'Root', root_path %>

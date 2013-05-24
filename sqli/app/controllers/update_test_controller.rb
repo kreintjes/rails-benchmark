@@ -1,34 +1,34 @@
 class UpdateTestController < ApplicationController
   # We want a form to edit a single attribute of an object through its instance methods.
   def object_single_edit
-    # Find the object we want to edit (by its ID)
+    # Find the object we want to edit (by its ID).
     @all_types_object = AllTypesObject.find(params[:id])
     params[:method] = "update_attribute" if params[:method].nil?
     case params[:method]
     when "increment", "decrement"
-      # Render the by field
+      # Render the by field.
       @partial = "by"
     when "toggle", "touch"
-      # Do not render extra fields
+      # Do not render extra fields.
       @partial = nil
     else
-      # Render the value field
+      # Render the value field.
       @partial = "value"
     end
   end
 
   # We want to update a single attribute of the object through its instance methods.
   def object_single_update
-    # Find the object we want to update by its ID
+    # Find the object we want to update by its ID.
     @all_types_object = AllTypesObject.find(params[:id])
     case params[:method]
     when "increment", "decrement"
-      # Increment the object's attribute :attribute by :by with Rails increment! method
+      # Increment the object's attribute :attribute by :by with Rails increment! method.
       begin
-        # First try it with the raw data (which will be a string)
+        # First try it with the raw data (which will be a string).
         @all_types_object.send("#{params[:method]}!", params[:attribute], params[:by])
       rescue TypeError=>e
-        # This likely fails, since increment/decrement expects by to be an integer or nil. Try again with a typecast
+        # This likely fails, since increment/decrement expects by to be an integer or nil. Try again with a typecast.
         if(params[:by].present?)
           @all_types_object.send("#{params[:method]}!", params[:attribute], params[:by].to_i)
         else
@@ -36,17 +36,17 @@ class UpdateTestController < ApplicationController
         end
       end
     when "toggle"
-      # Toggle (boolean switch) the attribute :attribute with Rails toggle! method
+      # Toggle (boolean switch) the attribute :attribute with Rails toggle! method.
       @all_types_object.toggle!(params[:attribute])
     when "touch"
-      # Touch (update with current timestamp) the attribute :attribute with Rails touch method
+      # Touch (update with current timestamp) the attribute :attribute with Rails touch method.
       @all_types_object.touch(*params[:attribute].presence)
     when "save"
       # Update the attribute :attribute with value :value by using its setter and saving the object.
       @all_types_object.send("#{params[:attribute]}=", params[:value])
       @all_types_object.save
     when "update_attribute", "update_column"
-      # Update the object's attribute :attribute with value :value with Rails update_attribute or update_column method
+      # Update the object's attribute :attribute with value :value with Rails update_attribute or update_column method.
       @all_types_object.send(params[:method], params[:attribute], params[:value])
     else
       raise "Unknown method '#{params[:method]}'"
@@ -58,14 +58,14 @@ class UpdateTestController < ApplicationController
 
   # We want a form to edit multiple attributes of an object through its instance methods.
   def object_multi_edit
-    # Find the object we want to edit (by its ID)
+    # Find the object we want to edit by its ID.
     @all_types_object = AllTypesObject.find(params[:id])
     params[:method] = "update_attributes" if params[:method].nil?
   end
 
   # We want to update multiple attributes of the object through its instance methods.
   def object_multi_update
-    # Find the object we want to edit (by its ID)
+    # Find the object we want to edit by its ID.
     @all_types_object = AllTypesObject.find(params[:id])
     case params[:method]
     when "save"
@@ -75,7 +75,7 @@ class UpdateTestController < ApplicationController
       end
       @all_types_object.save
     when "update_attributes"
-      # Update the attributes for the object with Rails basic update_attributes method
+      # Update the attributes for the object with Rails basic update_attributes method.
       @all_types_object.update_attributes(params[:all_types_object])
     else
       raise "Unknown method '#{params[:method]}'"
@@ -89,7 +89,7 @@ class UpdateTestController < ApplicationController
   def class_update_edit
     @all_types_object = AllTypesObject.new
     params[:method] = "single" if params[:method].nil?
-    # Setting some data for a nice display of the form
+    # Setting some data for the view.
     @multi = (params[:method] == "multi")
     @name = (@multi ? AllTypesObject.model_name.human.pluralize : AllTypesObject.model_name.human)
   end
@@ -100,7 +100,7 @@ class UpdateTestController < ApplicationController
       # Convert the attributes to an array of attributes (one for each of the objects we want to edit).
       params[:all_types_object] = Array.new(params[:id].size) { params[:all_types_object] }
     end
-    # Find the object(s) we want to edit by its/their ID(s) and update them.
+    # Find and update the object(s) by its/their ID(s) through the class update method.
     AllTypesObject.update(params[:id], params[:all_types_object])
     # Retrieve the updated object(s) fresh from the database. This way the scanners can check if the response is as expected and if there might be an SQL injection.
     @all_types_object = AllTypesObject.find(params[:id])
@@ -115,7 +115,7 @@ class UpdateTestController < ApplicationController
 
   # We want to update multiple attributes of objects through the class method update_all.
   def class_update_all_update
-    # Determine the updates
+    # Determine the updates.
     case params[:method]
     when "string"
       # We want to represent the updates as a string. Rails considers the string to be safe, so we apply our own sanitization through Rails quote method.
@@ -129,9 +129,9 @@ class UpdateTestController < ApplicationController
     else
       raise "Unknown method '#{params[:method]}'"
     end
-    # Determine the conditions
-    conditions = nil # XXX TODO are we going to support this option? It is basically a where call, so we will consider it anyway with the Read tests
-    # Determine the options (limit and order)
+    # Determine the conditions.
+    conditions = nil # XXX TODO are we going to support this option? It is basically a where call, so we will consider it anyway with the Read tests.
+    # Determine the options (limit and order).
     options = {}
     options[:limit] = params[:limit] if params[:limit].present?
     options[:order] = params[:order] if params[:order].present?
