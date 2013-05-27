@@ -65,7 +65,8 @@ class DeleteTestController < ApplicationController
     if conditions.present?
       affected = AllTypesObject.delete_all(conditions)
     else
-      affected = AllTypesObject.delete_all
+      affected = 0
+      affected = AllTypesObject.delete_all #XXX TODO Temporary disabled
     end
     redirect_to root_path, :notice => "#{affected} object(s) deleted!".capitalize
   end
@@ -96,7 +97,8 @@ class DeleteTestController < ApplicationController
     if conditions.present?
       affected = AllTypesObject.destroy_all(conditions)
     else
-      affected = AllTypesObject.destroy_all
+      affected = []
+      affected = AllTypesObject.destroy_all #XXX TODO Temporary disabled.
     end
     affected = affected.map(&:id).to_sentence
     redirect_to root_path, :notice => "object(s) #{affected} destroyed!".capitalize

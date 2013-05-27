@@ -20,6 +20,12 @@ Sqli::Application.configure do
   # Generate digests for assets URLs
   config.assets.digest = false
 
+  # See everything in the log (default is :info)
+  config.log_level = :fatal
+
+  # Use a different logger for distributed setups
+  config.logger = Logger.new('/dev/null')
+
   # Defaults to nil and saved in location specified by config.assets.prefix
   # config.assets.manifest = YOUR_PATH
 

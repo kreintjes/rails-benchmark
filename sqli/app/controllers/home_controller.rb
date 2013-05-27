@@ -3,18 +3,25 @@ class HomeController < ApplicationController
     @objects = AllTypesObject.order(:id).limit(10).all
     @amounts = 0..3
     @tests = {
+#=begin
       'create_test' => {
         'class_new' => ['create', 'create_array', 'save'],
       },
+#=end
+=begin
       #'read_test' => {
       #  'void' => ['void'],
       #},
+=end
+#=begin
       'update_test' => {
         'object_single_edit' => ['update_attribute', 'update_column', 'increment', 'decrement', 'toggle', 'touch', 'save'],
         'object_multi_edit' => ['update_attributes', 'save'],
         'class_update_edit' => ['single', 'multi'],
         'class_update_all_edit' => ['string', 'array', 'hash']
       },
+#=end
+#=begin
       'delete_test' => {
         'class_delete_form' => ['single', 'multi'],
         'class_destroy_form' => ['single', 'multi'],
@@ -22,6 +29,7 @@ class HomeController < ApplicationController
         'class_destroy_all_form' => ['string', 'array', 'hash'],
         'object_remove' => ['delete', 'destroy']
       },
+#=end
     }
   end
 end

@@ -60,6 +60,6 @@ module Sqli
     config.assets.version = '1.0'
 
     # Enable threaded mode
-    config.threadsafe!
+    config.threadsafe! unless ENV['THREADSAFE'] == 'false'
   end
 end
