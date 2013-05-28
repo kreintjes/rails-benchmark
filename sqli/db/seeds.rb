@@ -7,7 +7,7 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 # This script will generate <amount> times three objects: a nil object, an object initialized with default values and an object initialized with random values.
-amount = 50
+amount = 5
 amount.times do
   AllTypesObject.create
   AllTypesObject.create({
