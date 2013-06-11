@@ -1,6 +1,6 @@
 class HomeController < ApplicationController
   def index
-    @objects = AllTypesObject.order(:id).limit(10).all
+    @objects = AllTypesObject.order(:id).all
     @amounts = 0..3
     @tests = {
 #=begin
@@ -8,11 +8,11 @@ class HomeController < ApplicationController
         'class_new' => ['create', 'create_array', 'save'],
       },
 #=end
-=begin
-      #'read_test' => {
-      #  'void' => ['void'],
-      #},
-=end
+#=begin
+      'read_test' => {
+        'class_all_form' => nil,
+      },
+#=end
 #=begin
       'update_test' => {
         'object_single_edit' => ['update_attribute', 'update_column', 'increment', 'decrement', 'toggle', 'touch', 'save'],

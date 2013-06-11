@@ -8,7 +8,7 @@ class DeleteTestController < ApplicationController
   end
 
   # We want to delete an object/multiple objects through the class method delete.
-  def class_delete_action
+  def class_delete_perform
     # Find and delete the object(s) by its/their ID(s).
     success = AllTypesObject.delete(params[:id])
     objects = (params[:method] == 'single' ? "object #{params[:id]}" : "objects #{params[:id].to_sentence}")
@@ -28,7 +28,7 @@ class DeleteTestController < ApplicationController
   end
 
   # We want to destroy an object/multiple objects through the class method destroy.
-  def class_destroy_action
+  def class_destroy_perform
     # Find and destroy the object(s) by its/their ID(s).
     success = AllTypesObject.destroy(params[:id])
     objects = (params[:method] == 'single' ? "object #{params[:id]}" : "objects #{params[:id].to_sentence}")
@@ -46,7 +46,7 @@ class DeleteTestController < ApplicationController
   end
 
   # We want to delete objects through the class method delete_all.
-  def class_delete_all_action
+  def class_delete_all_perform
     # Determine the conditions
     case params[:method]
     when "string"
@@ -66,7 +66,7 @@ class DeleteTestController < ApplicationController
       affected = AllTypesObject.delete_all(conditions)
     else
       affected = 0
-      affected = AllTypesObject.delete_all #XXX TODO Temporary disabled
+      affected = AllTypesObject.delete_all # Enable/disable the delete all without conditions test?
     end
     redirect_to root_path, :notice => "#{affected} object(s) deleted!".capitalize
   end
@@ -78,7 +78,7 @@ class DeleteTestController < ApplicationController
   end
 
   # We want to destroy objects through the class method destroy_all.
-  def class_destroy_all_action
+  def class_destroy_all_perform
     # Determine the conditions
     case params[:method]
     when "string"
@@ -98,7 +98,7 @@ class DeleteTestController < ApplicationController
       affected = AllTypesObject.destroy_all(conditions)
     else
       affected = []
-      affected = AllTypesObject.destroy_all #XXX TODO Temporary disabled.
+      affected = AllTypesObject.destroy_all # Enable/disable the destroy all without conditions test?
     end
     affected = affected.map(&:id).to_sentence
     redirect_to root_path, :notice => "object(s) #{affected} destroyed!".capitalize

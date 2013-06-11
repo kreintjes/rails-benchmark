@@ -119,6 +119,7 @@ class UpdateTestController < ApplicationController
     case params[:method]
     when "string"
       # We want to represent the updates as a string. Rails considers the string to be safe, so we apply our own sanitization through Rails quote method.
+      # XXX TODO This is a bit of an artificial use of this method. Should we even include this test or just stick with the safe array and hash methods (and test the quote method in some other way)?
       updates = params[:all_types_object].reject { |k, v| v.blank? }.map { |k, v| "#{k} = #{AllTypesObject.connection.quote(v)}" }.join(",")
     when "array"
       # We want to represent the updates as an array. Rails applies the sanitization for us.

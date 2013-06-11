@@ -6,27 +6,31 @@
     <li><%= cat.humanize.pluralize %>
       <ul>
         <% actions.each do |action, methods| %>
-        <li><%= action.humanize %>:
-          <ul>
-            <% methods.each do |method| %>
-            <% if action.index("object") %>
-              <li><%= method.humanize %>:
-                <% @objects.each do |obj| %>
-                <%= link_to obj.id, self.send("#{cat}_#{action}_path", obj, method) %>
-                <% end %>
-              </li>
-            <% elsif method.index("create_array") %>
-              <li><%= method.humanize %>:
-                <% @amounts.each do |amount| %>
-                <%= link_to amount, self.send("#{cat}_#{action}_path", method, amount) %>
-                <% end %>
-              </li>
-            <% else %>
-              <li><%= link_to method.humanize, self.send("#{cat}_#{action}_path", method) %></li>
-            <% end %>
-            <% end %>
-          </ul>
-        </li>
+        <% if methods.present? %>
+          <li><%= action.humanize %>:
+            <ul>
+              <% methods.each do |method| %>
+              <% if action.index("object") %>
+                <li><%= method.humanize %>:
+                  <% @objects.each do |obj| %>
+                  <%= link_to obj.id, self.send("#{cat}_#{action}_path", obj, method) %>
+                  <% end %>
+                </li>
+              <% elsif method.index("create_array") %>
+                <li><%= method.humanize %>:
+                  <% @amounts.each do |amount| %>
+                  <%= link_to amount, self.send("#{cat}_#{action}_path", method, amount) %>
+                  <% end %>
+                </li>
+              <% else %>
+                <li><%= link_to method.humanize, self.send("#{cat}_#{action}_path", method) %></li>
+              <% end %>
+              <% end %>
+            </ul>
+          </li>
+        <% else %>
+          <li><%= link_to action.humanize, self.send("#{cat}_#{action}_path") %></li>
+        <% end %>
         <% end %>
       </ul>
     </li>

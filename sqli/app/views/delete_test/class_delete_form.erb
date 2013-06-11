@@ -1,6 +1,6 @@
 <h1><%= params[:controller].humanize %> - <%= params[:action].humanize %> - <%= params[:method].humanize %></h1>
 
-<%= form_tag(delete_test_class_delete_action_path(params[:method]), :method => "delete") do |f| %>
+<%= form_tag(delete_test_class_delete_perform_path(params[:method]), :method => "delete") do |f| %>
   <div class="field">
     <%= label_tag(:id) %><br />
     <%= select_tag(:id, options_for_select(AllTypesObject.order(:id).all.map(&:id)), :multiple => @multi) %>

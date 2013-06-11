@@ -13,3 +13,12 @@
 //= require jquery
 //= require jquery_ujs
 //= require_tree .
+
+$(document).ready(function() {
+  $(".toggleable.closed").hide();
+  $(".toggleable-link").css('cursor', 'pointer').css('text-decoration', 'underline');
+  $(".toggleable-link").click(function()
+  {
+    $(this).next(".toggleable").toggle();
+  });
+});
