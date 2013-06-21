@@ -4,7 +4,7 @@ class CreateTestController < ApplicationController
     # Initiate new object.
     params[:method] = "create" if params[:method].nil?
     case params[:method]
-    when 'create_array'
+    when "create_array"
       # Build multiple (params[:amount]) new objects.
       @all_types_object = Array.new(params[:amount].to_i) { AllTypesObject.new }
     else

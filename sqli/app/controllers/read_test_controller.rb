@@ -2,6 +2,7 @@ class ReadTestController < ApplicationController
   # We want a form to read multiple objects through the class method all.
   def class_all_form
     # That's easy, nothing to do here :)
+    params[:method] = "all" if params[:method].nil?
   end
 
   # We want to read multiple objects through the class method all.
@@ -10,8 +11,21 @@ class ReadTestController < ApplicationController
     relation = AllTypesObject
     # Extract and apply query methods
     relation = apply_query_methods(relation, params)
-    # Perform the read all
-    @all_types_objects = relation.all
+    # Perform the query
+    case params[:method]
+    when "all"
+      results = relation.all
+    when "first"
+      results = relation.first
+    when "last"
+      results = relation.last
+    else
+      raise "Unknown method '#{params[:method]}'"
+    end
+
+    # Wrap result in array and flatten (since the template expects an array of results)
+    @all_types_objects = [results].flatten
+
     respond_with(@all_types_objects)
   end
 

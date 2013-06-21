@@ -2,6 +2,7 @@ class HomeController < ApplicationController
   def index
     @objects = AllTypesObject.order(:id).all
     @amounts = 0..3
+=begin
     @tests = {
 #=begin
       'create_test' => {
@@ -31,5 +32,6 @@ class HomeController < ApplicationController
       },
 #=end
     }
+=end
   end
 end

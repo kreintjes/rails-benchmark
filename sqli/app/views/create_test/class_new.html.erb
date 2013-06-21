@@ -1,4 +1,4 @@
-<h1><%= params[:controller].humanize %> - <%= params[:action].humanize %></h1>
+<h1><%= params[:controller].humanize %> - <%= params[:action].humanize %> - <%= params[:method].humanize %></h1>
 
 <%= form_tag create_test_class_create_path(params[:method]) do %>
   <% if params[:method] == 'create_array' %>

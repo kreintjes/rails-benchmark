@@ -1,39 +1,105 @@
-<h1>Welcome to the SQL injection benchmark</h1>
+<h1>Welcome to the SQL injection benchmark module/application</h1>
 <p>
-  Benchmark tests:
-  <ul>
-    <% @tests.each do |cat, actions| %>
-    <li><%= cat.humanize.pluralize %>
-      <ul>
-        <% actions.each do |action, methods| %>
-        <% if methods.present? %>
-          <li><%= action.humanize %>:
-            <ul>
-              <% methods.each do |method| %>
-              <% if action.index("object") %>
-                <li><%= method.humanize %>:
-                  <% @objects.each do |obj| %>
-                  <%= link_to obj.id, self.send("#{cat}_#{action}_path", obj, method) %>
-                  <% end %>
-                </li>
-              <% elsif method.index("create_array") %>
-                <li><%= method.humanize %>:
-                  <% @amounts.each do |amount| %>
-                  <%= link_to amount, self.send("#{cat}_#{action}_path", method, amount) %>
-                  <% end %>
-                </li>
-              <% else %>
-                <li><%= link_to method.humanize, self.send("#{cat}_#{action}_path", method) %></li>
-              <% end %>
-              <% end %>
-            </ul>
-          </li>
-        <% else %>
-          <li><%= link_to action.humanize, self.send("#{cat}_#{action}_path") %></li>
-        <% end %>
-        <% end %>
-      </ul>
-    </li>
-    <% end %>
-  </ul>
+  This module is part of the Ruby on Rails security benchmark, which is a part of my Master Thesis research.<br />
+  It is basically a <%= link_to 'Ruby on Rails', 'http://www.rubyonrails.org/', :target => '_blank' %> web application (written in Rails 3.2.13) aimed at covering all the SQL injection related functionality, which in the case of Rails is the <%= link_to 'ActiveRecord', 'http://api.rubyonrails.org/classes/ActiveRecord/Base.html', :target => '_blank' %> database interface, which handles all SQL query generation and execution.<br />
+  It is not the intention to test this functionality by hand, but rather to use a automatic security analysis tool, such as the dynamic web vulnerability scanners <%= link_to 'Arachni', 'http://www.arachni-scanner.com/', :target => '_blank' %> and <%= link_to 'W3af', 'http://w3af.org/', :target => '_blank' %>. Since these scanners cannot scan the Rails framework directly, they need some kind of interface/bridge. That is what this benchmark application is meant for.<br />
+  If these scanners find a security vulnerability in this application, this could very well mean there is a security vulnerability in the Rails framework itself. This is because this application uses the functionality provided by the Rails framework in the most basic way possible (thus likely not introducing a security vulnerability itself). Furthermore, it uses functionality that should be secure to use with input from untrusted source (according to the Rails api/documentation).<br />
+  This benchmark module tends to be as complete as possible (using all the provided functionality in all the ways possible). However, this is not always complete feasible. Therefore, some things might have been left out. Please refer to my thesis (TODO link?) for more information.<br />
 </p>
+<p>
+  Below you can find the several tests/framework functionality included in this module:
+<p>
+<ul>
+  <li>Create tests
+    <ul>
+        <li>Class new:
+          <ul>
+              <li><%= link_to 'Create', create_test_class_new_path('create') %></li>
+              <li>Create array: <%= link_to_amounts 'create_test_class_new_path', 'create_array' %></li>
+              <li><%= link_to 'Save', create_test_class_new_path('save') %></li>
+          </ul>
+        </li>
+    </ul>
+  </li>
+  <li>Read tests
+    <ul>
+        <li>Basic execute methods:
+          <ul>
+            <li><%= link_to 'All', read_test_class_all_form_path('all') %></li>
+            <li><%= link_to 'First', read_test_class_all_form_path('first') %></li>
+            <li><%= link_to 'Last', read_test_class_all_form_path('last') %></li>
+          </ul>
+        </li>
+    </ul>
+  </li>
+  <li>Update tests
+    <ul>
+        <li>Object single edit:
+          <ul>
+              <li>Update attribute: <%= link_to_objects 'update_test_object_single_edit_path', 'update_attribute' %></li>
+              <li>Update column: <%= link_to_objects 'update_test_object_single_edit_path', 'update_column' %></li>
+              <li>Increment: <%= link_to_objects 'update_test_object_single_edit_path', 'increment' %></li>
+              <li>Decrement: <%= link_to_objects 'update_test_object_single_edit_path', 'decrement' %></li>
+              <li>Toggle: <%= link_to_objects 'update_test_object_single_edit_path', 'toggle' %></li>
+              <li>Touch: <%= link_to_objects 'update_test_object_single_edit_path', 'touch' %></li>
+              <li>Save: <%= link_to_objects 'update_test_object_single_edit_path', 'save' %></li>
+          </ul>
+        </li>
+        <li>Object multi edit:
+          <ul>
+              <li>Update attributes: <%= link_to_objects 'update_test_object_multi_edit_path', 'update_attributes' %></li>
+              <li>Save: <%= link_to_objects 'update_test_object_multi_edit_path', 'save' %></li>
+          </ul>
+        </li>
+        <li>Class update edit:
+          <ul>
+              <li><%= link_to 'Single', update_test_class_update_edit_path('single') %></li>
+              <li><%= link_to 'Multi', update_test_class_update_edit_path('multi') %></li>
+          </ul>
+        </li>
+        <li>Class update all edit:
+          <ul>
+              <li><%= link_to 'String', update_test_class_update_all_edit_path('string') %></li>
+              <li><%= link_to 'Array', update_test_class_update_all_edit_path('array') %></li>
+              <li><%= link_to 'Hash', update_test_class_update_all_edit_path('hash') %></li>
+          </ul>
+        </li>
+    </ul>
+  </li>
+  <li>Delete tests
+    <ul>
+        <li>Class delete form:
+          <ul>
+              <li><%= link_to 'Single', delete_test_class_delete_form_path('single') %></li>
+              <li><%= link_to 'Multi', delete_test_class_delete_form_path('multi') %></li>
+          </ul>
+        </li>
+        <li>Class destroy form:
+          <ul>
+              <li><%= link_to 'Single', delete_test_class_destroy_form_path('single') %></li>
+              <li><%= link_to 'Multi', delete_test_class_destroy_form_path('multi') %></li>
+          </ul>
+        </li>
+        <li>Class delete all form:
+          <ul>
+              <li><%= link_to 'String', delete_test_class_delete_all_form_path('string') %></li>
+              <li><%= link_to 'Array', delete_test_class_delete_all_form_path('array') %></li>
+              <li><%= link_to 'Hash', delete_test_class_delete_all_form_path('hash') %></li>
+          </ul>
+        </li>
+        <li>Class destroy all form:
+          <ul>
+              <li><%= link_to 'String', delete_test_class_destroy_all_form_path('string') %></li>
+              <li><%= link_to 'Array', delete_test_class_destroy_all_form_path('array') %></li>
+              <li><%= link_to 'Hash', delete_test_class_destroy_all_form_path('hash') %></li>
+          </ul>
+        </li>
+        <li>Object remove:
+          <ul>
+              <li>Delete: <%= link_to_objects 'delete_test_object_remove_path', 'delete' %></li>
+              <li>Destroy: <%= link_to_objects 'delete_test_object_remove_path', 'destroy' %></li>
+          </ul>
+        </li>
+    </ul>
+  </li>
+</ul>s
