@@ -15,19 +15,60 @@
         <li>Class new:
           <ul>
               <li><%= link_to 'Create', create_test_class_new_path('create') %></li>
+              <li><%= link_to 'Create!', create_test_class_new_path('create!') %></li>
               <li>Create array: <%= link_to_amounts 'create_test_class_new_path', 'create_array' %></li>
+              <li>Create! array: <%= link_to_amounts 'create_test_class_new_path', 'create!_array' %></li>
               <li><%= link_to 'Save', create_test_class_new_path('save') %></li>
+              <li><%= link_to 'Save!', create_test_class_new_path('save!') %></li>
           </ul>
         </li>
     </ul>
   </li>
   <li>Read tests
     <ul>
-        <li>Basic execute methods:
+        <li>Object find methods:
           <ul>
+            <li><%= link_to 'To_a', read_test_class_all_form_path('to_a') %></li>
             <li><%= link_to 'All', read_test_class_all_form_path('all') %></li>
-            <li><%= link_to 'First', read_test_class_all_form_path('first') %></li>
-            <li><%= link_to 'Last', read_test_class_all_form_path('last') %></li>
+            <li>First:
+              <%= link_to 'without amount', read_test_class_all_form_path('first') %>
+              <%= link_to 'with amount', read_test_class_all_form_path('first', 'option' => 'amount') %>
+            </li>
+            <li><%= link_to 'First!', read_test_class_all_form_path('first!') %></li>
+            <li>Last:
+              <%= link_to 'without amount', read_test_class_all_form_path('last') %>
+              <%= link_to 'with amount', read_test_class_all_form_path('last', 'option' => 'amount') %>
+            </li>
+            <li><%= link_to 'Last!', read_test_class_all_form_path('last!') %></li>
+            <li>Find:
+              <%= link_to 'sub method', read_test_class_all_form_path('find', 'option' => 'sub_method') %>
+              <%= link_to 'single id', read_test_class_all_form_path('find', 'option' => 'single_id') %>
+              <%= link_to 'id list', read_test_class_all_form_path('find', 'option' => 'id_list') %>
+              <%= link_to 'id array', read_test_class_all_form_path('find', 'option' => 'id_array') %>
+            </li>
+            <li><%= link_to 'Find_by_...', read_test_class_all_form_path('dynamic_find_by', 'option' => 'dynamic_find_by') %></li>
+            <li><%= link_to 'Find_by_...!', read_test_class_all_form_path('dynamic_find_by!', 'option' => 'dynamic_find_by') %></li>
+          </ul>
+        </li>
+        <li>Value methods:
+          <ul>
+            <li><%= link_to 'Any?', read_test_class_value_form_path('any?') %></li>
+            <li><%= link_to 'Empty?', read_test_class_value_form_path('empty?') %></li>
+            <li><%= link_to 'Many?', read_test_class_value_form_path('many?') %></li>
+            <li><%= link_to 'Size', read_test_class_value_form_path('size') %></li>
+            <li>Exists?: <%= link_to 'no arguments', read_test_class_value_form_path('exists?') %> <%= link_to 'id', read_test_class_value_form_path('exists?', 'option' => 'id') %> <%= link_to 'conditions array', read_test_class_value_form_path('exists?', 'option' => 'conditions_array') %> <%= link_to 'conditions hash', read_test_class_value_form_path('exists?', 'option' => 'conditions_hash') %></li>
+            <li><%= link_to 'Explain', read_test_class_value_form_path('explain') %></li>
+          </ul>
+        </li>
+        <li>Count methods:
+          <ul>
+            <li><%= link_to 'Average', read_test_class_value_form_path('average', 'option' => 'calculate') %></li>
+            <li><%= link_to 'Count', read_test_class_value_form_path('count', 'option' => 'calculate') %></li>
+            <li><%= link_to 'Maximum', read_test_class_value_form_path('maximum', 'option' => 'calculate') %></li>
+            <li><%= link_to 'Minimum', read_test_class_value_form_path('minimum', 'option' => 'calculate') %></li>
+            <li><%= link_to 'Sum', read_test_class_value_form_path('sum', 'option' => 'calculate') %></li>
+            <li><%= link_to 'Calculate', read_test_class_value_form_path('calculate', 'option' => 'calculate') %></li>
+            <li><%= link_to 'Pluck', read_test_class_value_form_path('pluck', 'option' => 'calculate') %></li>
           </ul>
         </li>
     </ul>
@@ -43,12 +84,15 @@
               <li>Toggle: <%= link_to_objects 'update_test_object_single_edit_path', 'toggle' %></li>
               <li>Touch: <%= link_to_objects 'update_test_object_single_edit_path', 'touch' %></li>
               <li>Save: <%= link_to_objects 'update_test_object_single_edit_path', 'save' %></li>
+              <li>Save!: <%= link_to_objects 'update_test_object_single_edit_path', 'save!' %></li>
           </ul>
         </li>
         <li>Object multi edit:
           <ul>
               <li>Update attributes: <%= link_to_objects 'update_test_object_multi_edit_path', 'update_attributes' %></li>
+              <li>Update attributes!: <%= link_to_objects 'update_test_object_multi_edit_path', 'update_attributes!' %></li>
               <li>Save: <%= link_to_objects 'update_test_object_multi_edit_path', 'save' %></li>
+              <li>Save!: <%= link_to_objects 'update_test_object_multi_edit_path', 'save!' %></li>
           </ul>
         </li>
         <li>Class update edit:

@@ -41,10 +41,10 @@ class UpdateTestController < ApplicationController
     when "touch"
       # Touch (update with current timestamp) the attribute :attribute with Rails touch method.
       @all_types_object.touch(*params[:attribute].presence)
-    when "save"
+    when "save", "save!"
       # Update the attribute :attribute with value :value by using its setter and saving the object.
       @all_types_object.send("#{params[:attribute]}=", params[:value])
-      @all_types_object.save
+      @all_types_object.send(params[:method])
     when "update_attribute", "update_column"
       # Update the object's attribute :attribute with value :value with Rails update_attribute or update_column method.
       @all_types_object.send(params[:method], params[:attribute], params[:value])
@@ -68,15 +68,15 @@ class UpdateTestController < ApplicationController
     # Find the object we want to edit by its ID.
     @all_types_object = AllTypesObject.find(params[:id])
     case params[:method]
-    when "save"
+    when "save", "save!"
       # Update the attributes by using their setters and saving the object.
       params[:all_types_object].each do |attribute, value|
         @all_types_object.send("#{attribute}=", value)
       end
-      @all_types_object.save
-    when "update_attributes"
+      @all_types_object.send(params[:method])
+    when "update_attributes", "update_attributes!"
       # Update the attributes for the object with Rails basic update_attributes method.
-      @all_types_object.update_attributes(params[:all_types_object])
+      @all_types_object.send(params[:method], params[:all_types_object])
     else
       raise "Unknown method '#{params[:method]}'"
     end

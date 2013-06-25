@@ -1,32 +1,133 @@
 class ReadTestController < ApplicationController
+  FIND_SUB_METHODS = ['all', 'first', 'last']
+  CALCULATE_SUB_METHODS = ['average', 'count', 'minimum', 'maximum', 'sum']
+
   # We want a form to read multiple objects through the class method all.
   def class_all_form
-    # That's easy, nothing to do here :)
     params[:method] = "all" if params[:method].nil?
+    if params[:option]
+      case params[:option]
+      when "sub_method"
+        # Render the sub_method field.
+        @partial = "sub_method"
+      when "single_id"
+        # Render the id select field.
+        @partial = "shared/id_select"
+      when "id_list", "id_array"
+        # Render the id multi select field.
+        @partial = "shared/id_multi_select"
+      when "amount"
+        # Render the amount field.
+        @partial = "amount"
+      when "dynamic_find_by"
+        # Render the attribute and value fields needed for the dynamic find by.
+        @partial = "dynamic_find_by"
+      end
+    end
   end
 
   # We want to read multiple objects through the class method all.
   def class_all_perform
     # Build the relation depending on the various options (query methods).
-    relation = AllTypesObject
+    relation = AllTypesObject.scoped
     # Extract and apply query methods
     relation = apply_query_methods(relation, params)
     # Perform the query
     case params[:method]
-    when "all"
-      results = relation.all
-    when "first"
-      results = relation.first
-    when "last"
-      results = relation.last
+    when "first", "last"
+      if params[:option].present? && params[:option] == "amount"
+        results = relation.send(params[:method], params[:amount].to_i)
+      else
+        results = relation.send(params[:method])
+      end
+    when "to_a", "all", "first!", "last!"
+      results = relation.send(params[:method])
+    when "find"
+      case params[:option]
+      when "sub_method"
+        raise "Unknown sub method '#{params[:sub_method]}'" unless FIND_SUB_METHODS.include?(params[:sub_method])
+        results = relation.send(params[:method], params[:sub_method].to_sym)
+      when "single_id"
+        results = relation.send(params[:method], params[:id])
+      when "id_list"
+        results = relation.send(params[:method], *params[:id])
+      when "id_array"
+        results = relation.send(params[:method], params[:id])
+      end
+    when "dynamic_find_by", "dynamic_find_by!"
+      method = "find_by_#{params[:attribute]}" + (params[:method] == "dynamic_find_by!" ? "!" : "")
+      results = relation.send(method, params[:value])
     else
       raise "Unknown method '#{params[:method]}'"
     end
 
-    # Wrap result in array and flatten (since the template expects an array of results)
+    # Wrap the result(s) in array and flatten (since the template expects an array of results)
     @all_types_objects = [results].flatten
 
     respond_with(@all_types_objects)
+  end
+
+  # We want a form to determine some value from a database table through a class method.
+  def class_value_form
+    params[:method] = "any?" if params[:method].nil?
+    if params[:option]
+      case params[:option]
+      when "id"
+        # Render the id select field.
+        @partial = "shared/id_select"
+      when "conditions_array", "conditions_hash"
+        # Render the conditions fields.
+        @partial = "conditions"
+      when "calculate"
+        # Render the column name field.
+        @partial = "calculate"
+        @sub_method = true, @column_name_nil = true, @distinct = true if params[:method] == 'calculate'
+        @column_name_nil = true, @distinct = true if params[:method] == 'count'
+      end
+    end
+  end
+
+  # We want to determine some value from a database table through a class method.
+  def class_value_perform
+    # Build the relation depending on the various options (query methods).
+    relation = AllTypesObject.scoped
+    # Extract and apply query methods
+    relation = apply_query_methods(relation, params)
+    # Perform the query
+    case params[:method]
+    when "any?", "empty?", "many?", "size", "explain"
+      result = relation.send(params[:method])
+    when "exists?"
+      case params[:option]
+      when "id"
+        result = relation.send(params[:method], params[:id])
+      when "conditions_array"
+        result = relation.send(params[:method], build_joined_conditions('array', params[:conditions][:placeholder_style], params[:conditions][:values]).flatten)
+      when "conditions_hash"
+        result = relation.send(params[:method], *build_joined_conditions('hash', params[:conditions][:placeholder_style], params[:conditions][:values]).flatten)
+      else
+        result = relation.send(params[:method])
+      end
+    when "average", "count", "maximum", "minimum", "sum", "pluck"
+      if params[:distinct].present?
+        result = relation.send(params[:method], params[:column_name].presence, { :distinct => params[:distinct] == "true" })
+      else
+        result = relation.send(params[:method], params[:column_name].presence)
+      end
+    when "calculate"
+      if params[:distinct].present?
+        result = relation.send(params[:method], params[:sub_method].to_sym, params[:column_name].presence, { :distinct => params[:distinct] == "true" })
+      else
+        result = relation.send(params[:method], params[:sub_method].to_sym, params[:column_name].presence)
+      end
+    else
+      raise "Unknown method '#{params[:method]}'"
+    end
+
+    # Make the result available for display
+    @result = result
+
+    respond_with(@result)
   end
 
   # Helper functions
@@ -45,8 +146,10 @@ private
     if params[:having].present?
       relation = build_and_apply_conditions(relation, :having, params[:having])
       # relation the database columns used in the having clause to the group clause or else an exception will occur.
-      relation = relation.group(params[:having][:values].select { |column, value| value.present? }.keys.join(','))
+      having_columns = params[:having][:values].select { |column, value| value.present? }.keys
+      relation = relation.group(having_columns.join(',')) if having_columns.present?
     end
+    relation
   end
 
   # Build and apply the conditions (in data) on relation using method.
