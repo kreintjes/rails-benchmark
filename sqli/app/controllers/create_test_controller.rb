@@ -1,4 +1,6 @@
 class CreateTestController < ApplicationController
+  before_filter :only => [:class_create] { @show_last_queries = true }
+
   # We want a form to insert a new object/multiple new objects into the database through the Class methods.
   def class_new
     # Initiate new object.

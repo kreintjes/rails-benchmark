@@ -7,10 +7,7 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 # This script will generate <amount> times three objects: a nil object, an object initialized with default values and an object initialized with random values.
-amount = 5
-amount.times do
-  AllTypesObject.create
-  AllTypesObject.create({
+empty = {
     :binary_col => 0x0,
     :boolean_col => false,
     :date_col => "0000-00-00",
@@ -22,8 +19,9 @@ amount.times do
     :text_col => "",
     :time_col => "00:00:00.000000",
     :timestamp_col => "0000-00-00 00:00:00.000000"
-  })
-  AllTypesObject.create({
+}
+
+filled = {
     :binary_col => 0x0123456789ABCDEF,
     :boolean_col => true,
     :date_col => DateTime.now,
@@ -35,5 +33,55 @@ amount.times do
     :text_col => "Dit is hele lange teksssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssst",
     :time_col => Time.new,
     :timestamp_col => Time.new.utc
-  })
+}
+
+amount = 1
+amount.times do
+  # Normal objects
+  AllTypesObject.create
+  AllTypesObject.create(empty)
+  AllTypesObject.create(filled)
+
+  # Associated objects
+  ass1 = AssociationObject.create
+  ass2 = AssociationObject.create
+  ass3 = AssociationObject.create
+  ass4 = AssociationObject.create
+  ass5 = AssociationObject.create
+  ass6 = AssociationObject.create
+
+  all4 = AllTypesObject.new(filled)
+  all4.has_one = ass1
+  all4.save
+
+  all5 = AllTypesObject.new(filled)
+  all5.has_many << ass2
+  all5.has_many << ass5
+  all5.save
+
+  all6 = AllTypesObject.new(filled)
+  all6.has_one = ass3
+  all6.save
+
+  all7 = AllTypesObject.new(filled)
+  all7.has_and_belongs_to_many << ass3
+  all7.has_and_belongs_to_many << ass4
+  all7.save
+
+  all8 = AllTypesObject.new(filled)
+  all8.belongs_to = ass3
+  all8.save
+
+  all9 = AllTypesObject.new(filled)
+  all9.belongs_to = ass5
+  all9.save
+
+  all10 = AllTypesObject.new(filled)
+  all10.belongs_to = ass6
+  all10.has_one = ass6
+  all10.has_many << ass6
+  all10.has_and_belongs_to_many << ass3
+  all10.has_and_belongs_to_many << ass4
+  all10.has_and_belongs_to_many << ass6
+  all10.save
 end

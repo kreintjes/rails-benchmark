@@ -64,3 +64,17 @@
   <b>Updated at:</b>
   <%= all_types_object.updated_at %>
 </p>
+
+<p>
+  <b>Belongs to id:</b>
+  <%= all_types_object.belongs_to_id %>
+</p>
+
+<% if @includes.present? %>
+<% @includes.each do |inc| %>
+<p>
+  <b><%= inc %>:</b>
+  <%= all_types_object.send(inc).inspect %>
+</p>
+<% end %>
+<% end %>

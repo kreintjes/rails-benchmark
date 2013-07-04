@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130515105402) do
+ActiveRecord::Schema.define(:version => 20130704122908) do
 
   create_table "all_types_objects", :force => true do |t|
     t.binary   "binary_col"
@@ -27,6 +27,22 @@ ActiveRecord::Schema.define(:version => 20130515105402) do
     t.datetime "timestamp_col"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
+    t.integer  "belongs_to_id"
   end
+
+  create_table "all_types_objects_association_objects", :force => true do |t|
+    t.integer "all_types_object_id"
+    t.integer "association_object_id"
+  end
+
+  create_table "association_objects", :force => true do |t|
+    t.integer  "has_one_id"
+    t.integer  "has_many_id"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  add_index "association_objects", ["has_many_id"], :name => "index_association_objects_on_has_many_id"
+  add_index "association_objects", ["has_one_id"], :name => "index_association_objects_on_has_one_id"
 
 end

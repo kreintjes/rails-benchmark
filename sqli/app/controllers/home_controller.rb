@@ -11,7 +11,7 @@ class HomeController < ApplicationController
 #=end
 #=begin
       'read_test' => {
-        'class_all_form' => nil,
+        'class_objects_form' => nil,
       },
 #=end
 #=begin

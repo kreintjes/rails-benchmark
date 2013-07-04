@@ -1,4 +1,6 @@
 class DeleteTestController < ApplicationController
+  before_filter :only => [:class_delete_perform, :class_destroy_perform, :class_delete_all_perform, :class_destroy_all_perform, :object_remove] { @show_last_queries = true }
+
   # We want a form to delete an object/multiple objects through the class method delete.
   def class_delete_form
     params[:method] = "single" if params[:method].nil?
@@ -9,14 +11,20 @@ class DeleteTestController < ApplicationController
 
   # We want to delete an object/multiple objects through the class method delete.
   def class_delete_perform
+    if params[:id].blank?
+      @result = "Please select one or more objects."
+      render 'result'
+      return
+    end
     # Find and delete the object(s) by its/their ID(s).
     success = AllTypesObject.delete(params[:id])
-    objects = (params[:method] == 'single' ? "object #{params[:id]}" : "objects #{params[:id].to_sentence}")
+    objects = (params[:method] == 'single' ? "object #{params[:id]}" :  "objects #{params[:id].to_sentence}")
     if success
-      redirect_to root_path, :notice => "#{objects} deleted!".capitalize
+      @result = "#{objects} deleted!".capitalize
     else
-      redirect_to root_path, :alert => "Deleting #{objects} failed... :("
+      @result = "Deleting #{objects} failed... :("
     end
+    render 'result'
   end
 
   # We want a form to destroy an object/multiple objects through the class method destroy.
@@ -29,14 +37,20 @@ class DeleteTestController < ApplicationController
 
   # We want to destroy an object/multiple objects through the class method destroy.
   def class_destroy_perform
+    if params[:id].blank?
+      @result = "Please select one or more objects."
+      render 'result'
+      return
+    end
     # Find and destroy the object(s) by its/their ID(s).
     success = AllTypesObject.destroy(params[:id])
     objects = (params[:method] == 'single' ? "object #{params[:id]}" : "objects #{params[:id].to_sentence}")
     if success
-      redirect_to root_path, :notice => "#{objects} destroyed!".capitalize
+      @result = "#{objects} destroyed!".capitalize
     else
-      redirect_to root_path, :alert => "Destroying #{objects} failed... :("
+      @result = "Destroying #{objects} failed... :("
     end
+    render 'result'
   end
 
   # We want a form to delete objects through the class method delete_all.
@@ -62,13 +76,14 @@ class DeleteTestController < ApplicationController
       raise "Unknown method '#{params[:method]}'"
     end
     # Perform the delete_all
+    affected = 0
     if conditions.present?
       affected = AllTypesObject.delete_all(conditions)
     else
-      affected = 0
       affected = AllTypesObject.delete_all # Enable/disable the delete all without conditions test?
     end
-    redirect_to root_path, :notice => "#{affected} object(s) deleted!".capitalize
+    @result = "#{affected} object(s) deleted!".capitalize
+    render 'result'
   end
 
   # We want a form to destroy objects through the class method destroy_all.
@@ -94,14 +109,15 @@ class DeleteTestController < ApplicationController
       raise "Unknown method '#{params[:method]}'"
     end
     # Perform the destroy_all
+    affected = []
     if conditions.present?
       affected = AllTypesObject.destroy_all(conditions)
     else
-      affected = []
       affected = AllTypesObject.destroy_all # Enable/disable the destroy all without conditions test?
     end
     affected = affected.map(&:id).to_sentence
-    redirect_to root_path, :notice => "object(s) #{affected} destroyed!".capitalize
+    @result = "object(s) #{affected} destroyed!".capitalize
+    render 'result'
   end
 
   # We want to remove an object through its object methods.
@@ -117,10 +133,11 @@ class DeleteTestController < ApplicationController
     end
     if success
       method = params[:method] == 'delete' ? 'deleted' : 'destroyed'
-      redirect_to root_path, :notice => "Object #{params[:id]} #{method}!"
+      @result = "Object #{params[:id]} #{method}!"
     else
       method = params[:method] == 'delete' ? 'Deleting' : 'Destroying'
-      redirect_to root_path, :alert => "#{method} object #{params[:id]} failed... :("
+      @result = "#{method} object #{params[:id]} failed... :("
     end
+    render 'result'
   end
 end

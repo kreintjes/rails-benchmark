@@ -1,68 +1,76 @@
 class ReadTestController < ApplicationController
+  before_filter :only => [:class_objects_perform, :class_value_perform, :class_by_sql_perform] { @show_last_queries = true }
+
   FIND_SUB_METHODS = ['all', 'first', 'last']
   CALCULATE_SUB_METHODS = ['average', 'count', 'minimum', 'maximum', 'sum']
+  ASSOCIATIONS = ['belongs_to', 'has_one', 'has_many', 'has_and_belongs_to_many']
 
-  # We want a form to read multiple objects through the class method all.
-  def class_all_form
+  # We want a form to read multiple objects through a class method.
+  def class_objects_form
     params[:method] = "all" if params[:method].nil?
     if params[:option]
       case params[:option]
-      when "sub_method"
-        # Render the sub_method field.
-        @partial = "sub_method"
       when "single_id"
         # Render the id select field.
         @partial = "shared/id_select"
       when "id_list", "id_array"
         # Render the id multi select field.
         @partial = "shared/id_multi_select"
-      when "amount"
-        # Render the amount field.
-        @partial = "amount"
-      when "dynamic_find_by"
-        # Render the attribute and value fields needed for the dynamic find by.
-        @partial = "dynamic_find_by"
+      when "sub_method", "amount", "dynamic_find_by", "batches"
+        # Render the corresponding option field(s).
+        @partial = params[:option]
       end
     end
   end
 
-  # We want to read multiple objects through the class method all.
-  def class_all_perform
+  # We want to read multiple objects through a class method.
+  def class_objects_perform
     # Build the relation depending on the various options (query methods).
     relation = AllTypesObject.scoped
     # Extract and apply query methods
     relation = apply_query_methods(relation, params)
+
     # Perform the query
     case params[:method]
     when "first", "last"
       if params[:option].present? && params[:option] == "amount"
-        results = relation.send(params[:method], params[:amount].to_i)
+        @results = relation.send(params[:method], params[:amount].to_i)
       else
-        results = relation.send(params[:method])
+        @results = relation.send(params[:method])
       end
     when "to_a", "all", "first!", "last!"
-      results = relation.send(params[:method])
+      @results = relation.send(params[:method])
+    when "select"
+      @results = relation.send(params[:method]) { true } # Select with a block acts as a finder method. The block simply returns true to not futher limit the results.
     when "find"
       case params[:option]
       when "sub_method"
         raise "Unknown sub method '#{params[:sub_method]}'" unless FIND_SUB_METHODS.include?(params[:sub_method])
-        results = relation.send(params[:method], params[:sub_method].to_sym)
+        @results = relation.send(params[:method], params[:sub_method].to_sym)
       when "single_id"
-        results = relation.send(params[:method], params[:id])
+        @results = relation.send(params[:method], params[:id])
       when "id_list"
-        results = relation.send(params[:method], *params[:id])
+        @results = relation.send(params[:method], *params[:id])
       when "id_array"
-        results = relation.send(params[:method], params[:id])
+        @results = relation.send(params[:method], params[:id])
       end
     when "dynamic_find_by", "dynamic_find_by!"
       method = "find_by_#{params[:attribute]}" + (params[:method] == "dynamic_find_by!" ? "!" : "")
-      results = relation.send(method, params[:value])
+      @results = relation.send(method, params[:value])
+    when "find_each", "find_in_batches"
+      @results = []
+      options = {}
+      options[:start] = params[:start].to_i if params[:start].present?
+      options[:batch_size] = params[:batch_size].to_i if params[:batch_size].present?
+      relation.send(params[:method], options) { |results| @results << results }
     else
       raise "Unknown method '#{params[:method]}'"
     end
 
     # Wrap the result(s) in array and flatten (since the template expects an array of results)
-    @all_types_objects = [results].flatten
+    @all_types_objects = [@results].flatten
+
+    @includes = relation.eager_load_values + relation.includes_values + relation.preload_values
 
     respond_with(@all_types_objects)
   end
@@ -93,39 +101,65 @@ class ReadTestController < ApplicationController
     relation = AllTypesObject.scoped
     # Extract and apply query methods
     relation = apply_query_methods(relation, params)
+
     # Perform the query
     case params[:method]
     when "any?", "empty?", "many?", "size", "explain"
-      result = relation.send(params[:method])
+      @result = relation.send(params[:method])
     when "exists?"
       case params[:option]
       when "id"
-        result = relation.send(params[:method], params[:id])
+        @result = relation.send(params[:method], params[:id])
       when "conditions_array"
-        result = relation.send(params[:method], build_joined_conditions('array', params[:conditions][:placeholder_style], params[:conditions][:values]).flatten)
+        @result = relation.send(params[:method], build_joined_conditions('array', params[:conditions][:placeholder_style], params[:conditions][:values]).flatten)
       when "conditions_hash"
-        result = relation.send(params[:method], *build_joined_conditions('hash', params[:conditions][:placeholder_style], params[:conditions][:values]).flatten)
+        @result = relation.send(params[:method], *build_joined_conditions('hash', params[:conditions][:placeholder_style], params[:conditions][:values]).flatten)
       else
-        result = relation.send(params[:method])
+        @result = relation.send(params[:method])
       end
-    when "average", "count", "maximum", "minimum", "sum", "pluck"
-      if params[:distinct].present?
-        result = relation.send(params[:method], params[:column_name].presence, { :distinct => params[:distinct] == "true" })
-      else
-        result = relation.send(params[:method], params[:column_name].presence)
-      end
-    when "calculate"
-      if params[:distinct].present?
-        result = relation.send(params[:method], params[:sub_method].to_sym, params[:column_name].presence, { :distinct => params[:distinct] == "true" })
-      else
-        result = relation.send(params[:method], params[:sub_method].to_sym, params[:column_name].presence)
-      end
+    when "average", "count", "maximum", "minimum", "sum", "pluck", "calculate"
+      options = [{ :distinct => (params[:distinct] == "true") }] if params[:distinct].present? # Only count and calculate take distinct (and actually only calculate with sub_method=count used distinct)
+      sub_method = [params[:sub_method].to_sym] if params[:method] == "calculate" # Only calculate takes a sub_method. For other methods sub method is ignored and not used as an argument.
+      @result = relation.send(params[:method], *sub_method, params[:column_name].presence, *options)
     else
       raise "Unknown method '#{params[:method]}'"
     end
 
-    # Make the result available for display
-    @result = result
+    respond_with(@result)
+  end
+
+  # We want a form to read through the class ..._by_sql methods.
+  def class_by_sql_form
+    params[:method] = "find_by_sql" if params[:method].nil?
+  end
+
+  # We want to read through the class ..._by_sql methods.
+  def class_by_sql_perform
+    # Determine the base query
+    case params[:method]
+    when "find_by_sql"
+      query = "SELECT * FROM all_types_objects"
+    when "count_by_sql"
+      query = "SELECT COUNT(*) FROM all_types_objects"
+    else
+      raise "Unknown method '#{params[:method]}'"
+    end
+
+    case params[:option]
+    when 'string'
+      # Build the conditions.
+      conditions = build_joined_conditions('string', params[:conditions][:placeholder_style], params[:conditions][:values]).first
+      # And append them to the query
+      query += ' WHERE ' + conditions.first if conditions.present?
+    when 'array'
+      # Build the conditions.
+      conditions = build_joined_conditions('array', params[:conditions][:placeholder_style], params[:conditions][:values]).first
+      # And rebuild the query such that it is an array with a statement and bind values for that statement.
+      query = [query + ' WHERE ' + conditions.first.shift, *conditions.first] if conditions.present?
+    end
+
+    # Perform the query
+    @result = AllTypesObject.send(params[:method], query)
 
     respond_with(@result)
   end
@@ -134,14 +168,14 @@ class ReadTestController < ApplicationController
 private
   # Extract query methods (finder options) from params and apply them to the relation.
   def apply_query_methods(relation, params)
-    # Add the unique option (boolean value).
-    relation = relation.uniq(params[:uniq]) if params[:uniq].present?
-    # Build and apply the where conditions.
-    relation = build_and_apply_conditions(relation, :where, params[:where]) if params[:where].present?
     # Add the limit option (numeric value).
     relation = relation.limit(params[:limit]) if params[:limit].present?
     # Add the offset option (numeric value).
     relation = relation.offset(params[:offset]) if params[:offset].present?
+    # Add the unique option (boolean value).
+    relation = relation.uniq(params[:uniq]) if params[:uniq].present?
+    # Build and apply the where conditions.
+    relation = build_and_apply_conditions(relation, :where, params[:where]) if params[:where].present?
     # Build and apply the having conditions.
     if params[:having].present?
       relation = build_and_apply_conditions(relation, :having, params[:having])
@@ -149,6 +183,14 @@ private
       having_columns = params[:having][:values].select { |column, value| value.present? }.keys
       relation = relation.group(having_columns.join(',')) if having_columns.present?
     end
+    # Add the eager_load option (string value).
+    relation = relation.eager_load(*params[:eager_load]) if params[:eager_load].present? # We only test the list argument type were we supply a list of strings. This is equivalent to calling the method with a single, list or array of strings/symbols.
+    # Add the includes option (string value).
+    relation = relation.includes(*params[:includes]) if params[:includes].present? # We only test the list argument type were we supply a list of strings. This is equivalent to calling the method with a single, list or array of strings/symbols.
+    # Add the joins option (string value).
+    relation = relation.joins(*params[:joins].map(&:to_sym)) if params[:joins].present? # We only test the list argument type were we supply a list of symbols (since supplying strings is not safe). This is equivalent to calling the method with a single, list or array of symbols.
+    # Add the preload option (string value).
+    relation = relation.preload(*params[:preload]) if params[:preload].present? # We only test the list argument type were we supply a list of strings. This is equivalent to calling the method with a single, list or array of strings/symbols.
     relation
   end
 
@@ -172,7 +214,7 @@ private
 
   # Apply formatted conditions (method arguments) on the relation using method.
   def apply_conditions(relation, method, conditions)
-    conditions.each { |condition| puts "Applying " + condition.inspect if condition.present? } # Debug information
+    #conditions.each { |condition| puts "Applying " + condition.inspect if condition.present? } # Debug information
     conditions.each { |condition| relation = relation.send(method, *condition) if condition.present? }
     relation
   end
@@ -202,7 +244,10 @@ private
     return nil if value.blank? # Reject blank values (this means we do not want to filter on this column)
     case argument_type
     when "string"
-      # We want to represent the condition as a string (with the bind values in a list). Rails applies the sanitization for us.
+      # We want to represent the condition as a string. Rails does not apply the sanitization for us (it considers the string safe), so we apply sanitization ourselves using Rails' helper methods.
+      ["#{column} = #{AllTypesObject.connection.quote(value)}"]
+    when "list"
+      # We want to represent the condition as a list (with a string SQL statement and bind values). Rails applies the sanitization for us.
       case placeholder_style
       when "question_mark"
         # Use question mark placeholders. The bind variables are a list/array.
@@ -218,8 +263,8 @@ private
       end
     when "array"
       # We want to represent the condition as an array (with the bind values in an array). Rails applies the sanitization for us.
-      # This is very similar to the string argument_type (actually, a string with bind values is mapped to an array in Rails), we only need to wrap the result in an array.
-     [build_condition("string", placeholder_style, column, value)]
+      # This is very similar to the list argument_type (actually, a list with a string SQL statement and bind values is mapped to an array in Rails), we only need to wrap the result in an array.
+     [build_condition("list", placeholder_style, column, value)]
     when "hash"
       # We want to represent the conditions as a hash. Rails applies the sanitization for us.
       # Placeholder style is ignored for hash arguments (it has no meaning)
@@ -236,7 +281,7 @@ private
     return condition if conditions.blank?
     case condition.first
     when String
-      # We want to represent the conditions as an AND concatenated string followed by the bind values in a list.
+      # We want to represent the conditions as an AND concatenated string followed by the (possible) bind values in a list.
       # Merge the statement (head of the array) with a simple string concatenation
       statement = conditions.shift + ' AND ' + condition.shift
       # Merge the bind variables (tail of the array).

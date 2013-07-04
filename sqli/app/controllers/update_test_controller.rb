@@ -1,4 +1,6 @@
 class UpdateTestController < ApplicationController
+  before_filter :only => [:object_single_update, :object_multi_update, :class_update_update, :class_update_all_update] { @show_last_queries = true }
+
   # We want a form to edit a single attribute of an object through its instance methods.
   def object_single_edit
     # Find the object we want to edit (by its ID).

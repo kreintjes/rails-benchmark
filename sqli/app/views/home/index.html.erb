@@ -28,26 +28,29 @@
     <ul>
         <li>Object find methods:
           <ul>
-            <li><%= link_to 'To_a', read_test_class_all_form_path('to_a') %></li>
-            <li><%= link_to 'All', read_test_class_all_form_path('all') %></li>
+            <li><%= link_to 'To_a', read_test_class_objects_form_path('to_a') %></li>
+            <li><%= link_to 'All', read_test_class_objects_form_path('all') %></li>
+            <li><%= link_to 'Select', read_test_class_objects_form_path('select') %></li>
             <li>First:
-              <%= link_to 'without amount', read_test_class_all_form_path('first') %>
-              <%= link_to 'with amount', read_test_class_all_form_path('first', 'option' => 'amount') %>
+              <%= link_to 'without amount', read_test_class_objects_form_path('first') %>
+              <%= link_to 'with amount', read_test_class_objects_form_path('first', 'option' => 'amount') %>
             </li>
-            <li><%= link_to 'First!', read_test_class_all_form_path('first!') %></li>
+            <li><%= link_to 'First!', read_test_class_objects_form_path('first!') %></li>
             <li>Last:
-              <%= link_to 'without amount', read_test_class_all_form_path('last') %>
-              <%= link_to 'with amount', read_test_class_all_form_path('last', 'option' => 'amount') %>
+              <%= link_to 'without amount', read_test_class_objects_form_path('last') %>
+              <%= link_to 'with amount', read_test_class_objects_form_path('last', 'option' => 'amount') %>
             </li>
-            <li><%= link_to 'Last!', read_test_class_all_form_path('last!') %></li>
+            <li><%= link_to 'Last!', read_test_class_objects_form_path('last!') %></li>
             <li>Find:
-              <%= link_to 'sub method', read_test_class_all_form_path('find', 'option' => 'sub_method') %>
-              <%= link_to 'single id', read_test_class_all_form_path('find', 'option' => 'single_id') %>
-              <%= link_to 'id list', read_test_class_all_form_path('find', 'option' => 'id_list') %>
-              <%= link_to 'id array', read_test_class_all_form_path('find', 'option' => 'id_array') %>
+              <%= link_to 'sub method', read_test_class_objects_form_path('find', 'option' => 'sub_method') %>
+              <%= link_to 'single id', read_test_class_objects_form_path('find', 'option' => 'single_id') %>
+              <%= link_to 'id list', read_test_class_objects_form_path('find', 'option' => 'id_list') %>
+              <%= link_to 'id array', read_test_class_objects_form_path('find', 'option' => 'id_array') %>
             </li>
-            <li><%= link_to 'Find_by_...', read_test_class_all_form_path('dynamic_find_by', 'option' => 'dynamic_find_by') %></li>
-            <li><%= link_to 'Find_by_...!', read_test_class_all_form_path('dynamic_find_by!', 'option' => 'dynamic_find_by') %></li>
+            <li><%= link_to 'Find_by_...', read_test_class_objects_form_path('dynamic_find_by', 'option' => 'dynamic_find_by') %></li>
+            <li><%= link_to 'Find_by_...!', read_test_class_objects_form_path('dynamic_find_by!', 'option' => 'dynamic_find_by') %></li>
+            <li><%= link_to 'Find_each', read_test_class_objects_form_path('find_each', 'option' => 'batches') %></li>
+            <li><%= link_to 'Find_in_batches', read_test_class_objects_form_path('find_in_batches', 'option' => 'batches') %></li>
           </ul>
         </li>
         <li>Value methods:
@@ -69,6 +72,12 @@
             <li><%= link_to 'Sum', read_test_class_value_form_path('sum', 'option' => 'calculate') %></li>
             <li><%= link_to 'Calculate', read_test_class_value_form_path('calculate', 'option' => 'calculate') %></li>
             <li><%= link_to 'Pluck', read_test_class_value_form_path('pluck', 'option' => 'calculate') %></li>
+          </ul>
+        </li>
+        <li>By SQL methods:
+          <ul>
+            <li>Find_by_sql: <%= link_to 'string', read_test_class_by_sql_form_path('find_by_sql', 'option' => 'string') %> <%= link_to 'array', read_test_class_by_sql_form_path('find_by_sql', 'option' => 'array') %></li>
+            <li>Count_by_sql: <%= link_to 'string', read_test_class_by_sql_form_path('count_by_sql', 'option' => 'string') %> <%= link_to 'array', read_test_class_by_sql_form_path('count_by_sql', 'option' => 'array') %></li>
           </ul>
         </li>
     </ul>
