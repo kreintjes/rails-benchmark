@@ -7,19 +7,17 @@ class ReadTestController < ApplicationController
 
   # We want a form to read multiple objects through a class method.
   def class_objects_form
-    params[:method] = "all" if params[:method].nil?
-    if params[:option]
-      case params[:option]
-      when "single_id"
-        # Render the id select field.
-        @partial = "shared/id_select"
-      when "id_list", "id_array"
-        # Render the id multi select field.
-        @partial = "shared/id_multi_select"
-      when "sub_method", "amount", "dynamic_find_by", "batches"
-        # Render the corresponding option field(s).
-        @partial = params[:option]
-      end
+    case params[:method]
+    when "first", "last"
+      @partial = "amount"
+    when "dynamic_find_by", "dynamic_find_by!"
+      @partial = "dynamic_find_by"
+    when "find_each", "find_in_batches"
+      @partial = "batches"
+    when "first_or_initialize", "first_or_create", "first_or_create!"
+      @partial = "attributes"
+    when "find"
+      @partial = parse_option
     end
   end
 
@@ -33,11 +31,8 @@ class ReadTestController < ApplicationController
     # Perform the query
     case params[:method]
     when "first", "last"
-      if params[:option].present? && params[:option] == "amount"
-        @results = relation.send(params[:method], params[:amount].to_i)
-      else
-        @results = relation.send(params[:method])
-      end
+      amount = params[:amount].to_i if params[:amount].present?
+      @results = relation.send(params[:method], *amount)
     when "to_a", "all", "first!", "last!"
       @results = relation.send(params[:method])
     when "select"
@@ -63,6 +58,8 @@ class ReadTestController < ApplicationController
       options[:start] = params[:start].to_i if params[:start].present?
       options[:batch_size] = params[:batch_size].to_i if params[:batch_size].present?
       relation.send(params[:method], options) { |results| @results << results }
+    when "first_or_initialize", "first_or_create", "first_or_create!"
+      @results = relation.send(params[:method], params[:attributes].presence)
     else
       raise "Unknown method '#{params[:method]}'"
     end
@@ -77,21 +74,14 @@ class ReadTestController < ApplicationController
 
   # We want a form to determine some value from a database table through a class method.
   def class_value_form
-    params[:method] = "any?" if params[:method].nil?
-    if params[:option]
-      case params[:option]
-      when "id"
-        # Render the id select field.
-        @partial = "shared/id_select"
-      when "conditions_array", "conditions_hash"
-        # Render the conditions fields.
-        @partial = "conditions"
-      when "calculate"
-        # Render the column name field.
-        @partial = "calculate"
-        @sub_method = true, @column_name_nil = true, @distinct = true if params[:method] == 'calculate'
-        @column_name_nil = true, @distinct = true if params[:method] == 'count'
-      end
+    case params[:method]
+    when "exists?"
+      @partial = parse_option
+    when "average", "count", "maximum", "minimum", "sum", "calculate", "pluck"
+      # Render the column name field.
+      @partial = "calculate"
+      @sub_method = true, @column_name_nil = true, @distinct = true if params[:method] == 'calculate'
+      @column_name_nil = true, @distinct = true if params[:method] == 'count'
     end
   end
 
@@ -117,7 +107,7 @@ class ReadTestController < ApplicationController
       else
         @result = relation.send(params[:method])
       end
-    when "average", "count", "maximum", "minimum", "sum", "pluck", "calculate"
+    when "average", "count", "maximum", "minimum", "sum", "calculate", "pluck"
       options = [{ :distinct => (params[:distinct] == "true") }] if params[:distinct].present? # Only count and calculate take distinct (and actually only calculate with sub_method=count used distinct)
       sub_method = [params[:sub_method].to_sym] if params[:method] == "calculate" # Only calculate takes a sub_method. For other methods sub method is ignored and not used as an argument.
       @result = relation.send(params[:method], *sub_method, params[:column_name].presence, *options)
@@ -130,7 +120,7 @@ class ReadTestController < ApplicationController
 
   # We want a form to read through the class ..._by_sql methods.
   def class_by_sql_form
-    params[:method] = "find_by_sql" if params[:method].nil?
+    # Nothing to do heres
   end
 
   # We want to read through the class ..._by_sql methods.
@@ -166,14 +156,35 @@ class ReadTestController < ApplicationController
 
   # Helper functions
 private
+  # Determine the needed partial for the option
+  def parse_option
+    case params[:option]
+    when "id", "single_id"
+      # Render the id select field.
+      "shared/id_select"
+    when "id_list", "id_array"
+      # Render the id multi select field.
+      "shared/id_multi_select"
+    when "conditions_array", "conditions_hash"
+      # Render the conditions fields.
+      @partial = "conditions"
+    when "sub_method", "amount", "dynamic_find_by", "batches", "attributes"
+      # Render the corresponding option field(s).
+      params[:option]
+    end
+  end
+
   # Extract query methods (finder options) from params and apply them to the relation.
   def apply_query_methods(relation, params)
+    # Simple options
     # Add the limit option (numeric value).
     relation = relation.limit(params[:limit]) if params[:limit].present?
     # Add the offset option (numeric value).
     relation = relation.offset(params[:offset]) if params[:offset].present?
     # Add the unique option (boolean value).
     relation = relation.uniq(params[:uniq]) if params[:uniq].present?
+
+    # Conditions
     # Build and apply the where conditions.
     relation = build_and_apply_conditions(relation, :where, params[:where]) if params[:where].present?
     # Build and apply the having conditions.
@@ -183,6 +194,8 @@ private
       having_columns = params[:having][:values].select { |column, value| value.present? }.keys
       relation = relation.group(having_columns.join(',')) if having_columns.present?
     end
+
+    # Associations
     # Add the eager_load option (string value).
     relation = relation.eager_load(*params[:eager_load]) if params[:eager_load].present? # We only test the list argument type were we supply a list of strings. This is equivalent to calling the method with a single, list or array of strings/symbols.
     # Add the includes option (string value).
@@ -191,6 +204,10 @@ private
     relation = relation.joins(*params[:joins].map(&:to_sym)) if params[:joins].present? # We only test the list argument type were we supply a list of symbols (since supplying strings is not safe). This is equivalent to calling the method with a single, list or array of symbols.
     # Add the preload option (string value).
     relation = relation.preload(*params[:preload]) if params[:preload].present? # We only test the list argument type were we supply a list of strings. This is equivalent to calling the method with a single, list or array of strings/symbols.
+
+    # Others
+    relation = relation.create_with(params[:create_with]) if params[:create_with].present?
+
     relation
   end
 

@@ -1,6 +1,6 @@
 <h1><%= params[:controller].humanize %> - <%= params[:action].humanize %> - <%= params[:method].humanize %></h1>
 
-<%= form_tag read_test_class_objects_perform_path(params[:method], 'option' => params[:option]) do %>
+<%= form_tag read_test_class_objects_perform_path(params[:method], params[:option]) do %>
   <%= render @partial if @partial.present? %>
   <%= render 'query_methods_fields' %>
   <div class="actions">

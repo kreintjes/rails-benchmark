@@ -7,12 +7,12 @@ Sqli::Application.routes.draw do
   match "create_test/class_create/:method(/:amount)", :controller => 'create_test', :action => 'class_create', :via => 'post', :as => 'create_test_class_create'
 
   # Read tests
-  match "read_test/class_objects_form/:method", :controller => 'read_test', :action => 'class_objects_form', :via => 'get', :as => 'read_test_class_objects_form'
-  match "read_test/class_objects_perform/:method", :controller => 'read_test', :action => 'class_objects_perform', :via => 'post', :as => 'read_test_class_objects_perform'
-  match "read_test/class_value_form/:method", :controller => 'read_test', :action => 'class_value_form', :via => 'get', :as => 'read_test_class_value_form'
-  match "read_test/class_value_perform/:method", :controller => 'read_test', :action => 'class_value_perform', :via => 'post', :as => 'read_test_class_value_perform'
-  match "read_test/class_by_sql_form/:method", :controller => 'read_test', :action => 'class_by_sql_form', :via => 'get', :as => 'read_test_class_by_sql_form'
-  match "read_test/class_by_sql_perform/:method", :controller => 'read_test', :action => 'class_by_sql_perform', :via => 'post', :as => 'read_test_class_by_sql_perform'
+  match "read_test/class_objects_form/:method(/:option)", :controller => 'read_test', :action => 'class_objects_form', :via => 'get', :as => 'read_test_class_objects_form'
+  match "read_test/class_objects_perform/:method(/:option)", :controller => 'read_test', :action => 'class_objects_perform', :via => 'post', :as => 'read_test_class_objects_perform'
+  match "read_test/class_value_form/:method(/:option)", :controller => 'read_test', :action => 'class_value_form', :via => 'get', :as => 'read_test_class_value_form'
+  match "read_test/class_value_perform/:method(/:option)", :controller => 'read_test', :action => 'class_value_perform', :via => 'post', :as => 'read_test_class_value_perform'
+  match "read_test/class_by_sql_form/:method(/:option)", :controller => 'read_test', :action => 'class_by_sql_form', :via => 'get', :as => 'read_test_class_by_sql_form'
+  match "read_test/class_by_sql_perform/:method(/:option)", :controller => 'read_test', :action => 'class_by_sql_perform', :via => 'post', :as => 'read_test_class_by_sql_perform'
 
   # Update tests
   match "update_test/object_single_edit/:id/:method", :controller => 'update_test', :action => 'object_single_edit', :via => 'get', :as => 'update_test_object_single_edit'

@@ -56,7 +56,7 @@
   <% end %>
 </div>
 
-<h2>Association options</h2>
+<h2>Associations</h2>
 <h3 class="toggleable-link">Eager_load</h3>
 <div class="field toggleable closed">
   <%= label_tag(:eager_load) %><br />
@@ -76,4 +76,12 @@
 <div class="field toggleable closed">
   <%= label_tag(:preload) %><br />
   <%= select_tag(:preload, options_for_select(ReadTestController::ASSOCIATIONS), :multiple => true) %>
+</div>
+
+<h2>Others</h2>
+<h3 class="toggleable-link">Create_with</h3>
+<div class="fields toggleable closed">
+  <%= fields_for "create_with", AllTypesObject.new do |f| %>
+    <%= render 'all_types_objects/fields', :f => f %>
+  <% end %>
 </div>
