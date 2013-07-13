@@ -2,6 +2,8 @@ Sqli::Application.routes.draw do
   get "home/index"
   root :to => 'home#index'
 
+  match "home/update_condition_options", :controller => 'home', :action => 'update_condition_options', :via => 'post', :as => 'home_update_condition_options'
+
   # Create tests
   match "create_test/class_new/:method(/:amount)", :controller => 'create_test', :action => 'class_new', :via => 'get', :as => 'create_test_class_new'
   match "create_test/class_create/:method(/:amount)", :controller => 'create_test', :action => 'class_create', :via => 'post', :as => 'create_test_class_create'

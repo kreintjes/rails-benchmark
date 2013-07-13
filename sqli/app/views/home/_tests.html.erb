@@ -1,7 +1,11 @@
+<h2>Tests</h2>
+<p>
+  Below you can find the several tests/framework functionality included in this module:
+<p>
 <ul>
   <li>Create tests
     <ul>
-      <li>Class create:
+      <li>Class methods:
         <ul>
             <li><%= link_to 'Create', create_test_class_new_path('create') %></li>
             <li><%= link_to 'Create!', create_test_class_new_path('create!') %></li>
@@ -15,7 +19,7 @@
   </li>
   <li>Read tests
     <ul>
-      <li>Object finders:
+      <li>Object finder relation methods:
         <ul>
           <li><%= link_to 'To_a', read_test_class_objects_form_path('to_a') %></li>
           <li><%= link_to 'All', read_test_class_objects_form_path('all') %></li>
@@ -39,7 +43,7 @@
           <li><%= link_to 'First_or_create!', read_test_class_objects_form_path('first_or_create!') %></li>
         </ul>
       </li>
-      <li>Value methods:
+      <li>Value relation methods:
         <ul>
           <li><%= link_to 'Any?', read_test_class_value_form_path('any?') %></li>
           <li><%= link_to 'Empty?', read_test_class_value_form_path('empty?') %></li>
@@ -54,7 +58,7 @@
           <li><%= link_to 'Explain', read_test_class_value_form_path('explain') %></li>
         </ul>
       </li>
-      <li>Count methods:
+      <li>Count relation methods:
         <ul>
           <li><%= link_to 'Average', read_test_class_value_form_path('average') %></li>
           <li><%= link_to 'Count', read_test_class_value_form_path('count') %></li>
@@ -65,7 +69,7 @@
           <li><%= link_to 'Pluck', read_test_class_value_form_path('pluck') %></li>
         </ul>
       </li>
-      <li>By SQL methods:
+      <li>By SQL relation methods:
         <ul>
           <li>Find_by_sql:
             <%= link_to 'string', read_test_class_by_sql_form_path('find_by_sql', 'string') %>
@@ -81,6 +85,19 @@
   </li>
   <li>Update tests
     <ul>
+      <li>Relation methods:
+        <ul>
+          <li>Class update:
+            <%= link_to 'Single', update_test_class_update_edit_path('single') %>
+            <%= link_to 'Multi', update_test_class_update_edit_path('multi') %>
+          </li>
+          <li>Class update all:
+            <%= link_to 'String', update_test_class_update_all_edit_path('string') %>
+            <%= link_to 'Array', update_test_class_update_all_edit_path('array') %>
+            <%= link_to 'Hash', update_test_class_update_all_edit_path('hash') %>
+          </li>
+        </ul>
+      </li>
       <li>Object single update:
         <ul>
             <li>Update attribute: <%= link_to_objects 'update_test_object_single_edit_path', 'update_attribute' %></li>
@@ -101,42 +118,37 @@
             <li>Save!: <%= link_to_objects 'update_test_object_multi_edit_path', 'save!' %></li>
         </ul>
       </li>
-      <li>Class update:
-        <%= link_to 'Single', update_test_class_update_edit_path('single') %>
-        <%= link_to 'Multi', update_test_class_update_edit_path('multi') %>
-      </li>
-      <li>Class update all:
-        <%= link_to 'String', update_test_class_update_all_edit_path('string') %>
-        <%= link_to 'Array', update_test_class_update_all_edit_path('array') %>
-        <%= link_to 'Hash', update_test_class_update_all_edit_path('hash') %>
-      </li>
     </ul>
   </li>
   <li>Delete tests
     <ul>
+      <li>Relation methods:
+          <ul>
+            <li>Class delete:
+              <%= link_to 'Single', delete_test_class_delete_form_path('single') %>
+              <%= link_to 'Multi', delete_test_class_delete_form_path('multi') %>
+            </li>
+            <li>Class destroy:
+              <%= link_to 'Single', delete_test_class_destroy_form_path('single') %>
+              <%= link_to 'Multi', delete_test_class_destroy_form_path('multi') %>
+            </li>
+            <li>Class delete all:
+              <%= link_to 'String', delete_test_class_delete_all_form_path('string') %>
+              <%= link_to 'Array', delete_test_class_delete_all_form_path('array') %>
+              <%= link_to 'Hash', delete_test_class_delete_all_form_path('hash') %>
+            </li>
+            <li>Class destroy all:
+              <%= link_to 'String', delete_test_class_destroy_all_form_path('string') %>
+              <%= link_to 'Array', delete_test_class_destroy_all_form_path('array') %>
+              <%= link_to 'Hash', delete_test_class_destroy_all_form_path('hash') %>
+            </li>
+          </ul>
+      </li>
       <li>Object remove:
         <ul>
             <li>Delete: <%= link_to_objects 'delete_test_object_remove_path', 'delete' %></li>
             <li>Destroy: <%= link_to_objects 'delete_test_object_remove_path', 'destroy' %></li>
         </ul>
-      </li>s
-      <li>Class delete:
-        <%= link_to 'Single', delete_test_class_delete_form_path('single') %>
-        <%= link_to 'Multi', delete_test_class_delete_form_path('multi') %>
-      </li>
-      <li>Class destroy:
-        <%= link_to 'Single', delete_test_class_destroy_form_path('single') %>
-        <%= link_to 'Multi', delete_test_class_destroy_form_path('multi') %>
-      </li>
-      <li>Class delete all:
-        <%= link_to 'String', delete_test_class_delete_all_form_path('string') %>
-        <%= link_to 'Array', delete_test_class_delete_all_form_path('array') %>
-        <%= link_to 'Hash', delete_test_class_delete_all_form_path('hash') %>
-      </li>
-      <li>Class destroy all:
-        <%= link_to 'String', delete_test_class_destroy_all_form_path('string') %>
-        <%= link_to 'Array', delete_test_class_destroy_all_form_path('array') %>
-        <%= link_to 'Hash', delete_test_class_destroy_all_form_path('hash') %>
       </li>
     </ul>
   </li>

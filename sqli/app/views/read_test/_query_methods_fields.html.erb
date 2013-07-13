@@ -20,46 +20,14 @@
 <h2>Conditions</h2>
 <h3 class="toggleable-link">Where</h3>
 <div class="fields toggleable closed">
-  <div class="field">
-    <%= label_tag('where[apply_method]') %><br />
-    <%= select_tag('where[apply_method]', options_for_select(ApplicationController::CONDITIONS_APPLY_METHODS)) %>
-  </div>
-  <div class="field">
-    <%= label_tag('where[argument_type]') %><br />
-    <%= select_tag('where[argument_type]', options_for_select(ApplicationController::CONDITIONS_ARGUMENT_TYPES)) %>
-  </div>
-  <div class="field">
-    <%= label_tag('where[placeholder_style]') %><br />
-    <%= select_tag('where[placeholder_style]', options_for_select(ApplicationController::CONDITIONS_PLACEHOLDER_STYLES)) %>
-  </div>
-  <div class="field">
-    <%= label_tag('where[hash_style]') %><br />
-    <%= select_tag('where[hash_style]', options_for_select(ApplicationController::CONDITIONS_HASH_STYLES)) %>
-  </div>
-  <%= fields_for "where[values]", AllTypesObject.new do |f| %>
+  <%= fields_for "where", AllTypesObject.new do |f| %>
     <%= render 'all_types_objects/fields', :f => f, :for_conditions => true %>
   <% end %>
 </div>
 
 <h3 class="toggleable-link">Having</h3>
 <div class="fields toggleable closed">
-  <div class="field">
-    <%= label_tag('having[apply_method]') %><br />
-    <%= select_tag('having[apply_method]', options_for_select(ApplicationController::CONDITIONS_APPLY_METHODS)) %>
-  </div>
-  <div class="field">
-    <%= label_tag('having[argument_type]') %><br />
-    <%= select_tag('having[argument_type]', options_for_select(ApplicationController::CONDITIONS_ARGUMENT_TYPES)) %>
-  </div>
-  <div class="field">
-    <%= label_tag('having[placeholder_style]') %><br />
-    <%= select_tag('having[placeholder_style]', options_for_select(ApplicationController::CONDITIONS_PLACEHOLDER_STYLES)) %>
-  </div>
-  <div class="field">
-    <%= label_tag('having[hash_style]') %><br />
-    <%= select_tag('having[hash_style]', options_for_select(ApplicationController::CONDITIONS_HASH_STYLES)) %>
-  </div>
-  <%= fields_for "having[values]", AllTypesObject.new do |f| %>
+  <%= fields_for "having", AllTypesObject.new do |f| %>
     <%= render 'all_types_objects/fields', :f => f, :for_conditions => true %>
   <% end %>
 </div>

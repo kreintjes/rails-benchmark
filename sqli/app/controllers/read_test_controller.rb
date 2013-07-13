@@ -101,9 +101,9 @@ class ReadTestController < ApplicationController
       when "id"
         @result = relation.send(params[:method], params[:id])
       when "conditions_array"
-        @result = relation.send(params[:method], build_joined_conditions('array', params[:conditions][:placeholder_style], params[:conditions][:values]).flatten)
+        @result = relation.send(params[:method], build_conditions('joined', 'array', params[:conditions]).flatten)
       when "conditions_hash"
-        @result = relation.send(params[:method], *build_joined_conditions('hash', params[:conditions][:placeholder_style], params[:conditions][:values]).flatten)
+        @result = relation.send(params[:method], *build_conditions('joined', 'hash', params[:conditions]).flatten)
       else
         @result = relation.send(params[:method])
       end
@@ -120,7 +120,7 @@ class ReadTestController < ApplicationController
 
   # We want a form to read through the class ..._by_sql methods.
   def class_by_sql_form
-    # Nothing to do heres
+    # Nothing to do here
   end
 
   # We want to read through the class ..._by_sql methods.
@@ -138,12 +138,12 @@ class ReadTestController < ApplicationController
     case params[:option]
     when 'string'
       # Build the conditions.
-      conditions = build_joined_conditions('string', params[:conditions][:placeholder_style], params[:conditions][:values]).first
+      conditions = build_conditions('joined', 'string', params[:conditions]).first
       # And append them to the query
       query += ' WHERE ' + conditions.first if conditions.present?
     when 'array'
       # Build the conditions.
-      conditions = build_joined_conditions('array', params[:conditions][:placeholder_style], params[:conditions][:values]).first
+      conditions = build_conditions('joined', 'array', params[:conditions]).first
       # And rebuild the query such that it is an array with a statement and bind values for that statement.
       query = [query + ' WHERE ' + conditions.first.shift, *conditions.first] if conditions.present?
     end
@@ -191,7 +191,7 @@ private
     if params[:having].present?
       relation = build_and_apply_conditions(relation, :having, params[:having])
       # relation the database columns used in the having clause to the group clause or else an exception will occur.
-      having_columns = params[:having][:values].select { |column, value| value.present? }.keys
+      having_columns = params[:having].select { |column, value| value.present? }.keys
       relation = relation.group(having_columns.join(',')) if having_columns.present?
     end
 
@@ -212,20 +212,10 @@ private
   end
 
   # Build and apply the conditions (in data) on relation using method.
-  def build_and_apply_conditions(relation, method, data)
-    # Extract the optonss
-    apply_method = data[:apply_method]
-    argument_type = data[:argument_type]
-    placeholder_style = data[:placeholder_style]
-    hash_style = data[:hash_style]
-    values = data[:values]
-    if(apply_method == 'separated')
-      # We want to apply the conditions separated (one where call per condition). Build an array containing all the separate conditions in the right format.
-      conditions = build_separated_conditions(argument_type, placeholder_style, hash_style, values)
-    else
-      # We want to apply the conditions joined (one where call for all conditions). Build an array containing one large condition in the right format.
-      conditions = build_joined_conditions(argument_type, placeholder_style, hash_style, values)
-    end
+  # Uses all the global @condition_options.
+  def build_and_apply_conditions(relation, method, values)
+    # Build the conditions
+    conditions = build_conditions(values)
     # Apply the formatted conditions on the relation using method.
     apply_conditions(relation, method, conditions)
   end
@@ -236,17 +226,32 @@ private
     relation
   end
 
+  # Build/format conditions, either separated or joined.
+  def build_conditions(apply_method = nil, argument_type = nil, values)
+    apply_method = @condition_options[:apply_method] if apply_method.nil?
+    if(apply_method == 'separated')
+      # We want to apply the conditions separated (one where call per condition). Build an array containing all the separate conditions in the right format.
+      conditions = build_separated_conditions(argument_type, values)
+    else
+      # We want to apply the conditions joined (one where call for all conditions). Build an array containing one large condition in the right format.
+      conditions = build_joined_conditions(argument_type, values)
+    end
+    conditions = conditions.delete_if { |c| c.nil? } # Delete conditions that resulted in nil (there was no value set for that column).
+    log_query(conditions.map(&:inspect).to_sentence, 'Conditions Built') if conditions.present? # Log the conditions in the query log, so we know what is going on.
+    conditions
+  end
+
   # Build/format separated conditions. Returns an array with a (formatted) element for each condition.
-  def build_separated_conditions(argument_type, placeholder_style, hash_style, values)
-    values.map { |column, value| build_condition(argument_type, placeholder_style, hash_style, column, value) }
+  def build_separated_conditions(argument_type, values)
+    values.map { |column, value| build_condition(argument_type, column, value) }
   end
 
   # Build/format joined conditions. Returns an array with one formatted element representing all the conditions.
-  def build_joined_conditions(argument_type, placeholder_style, hash_style, values)
+  def build_joined_conditions(argument_type, values)
     conditions = nil
     values.each do |column, value|
       # Format the next condition
-      condition = build_condition(argument_type, placeholder_style, hash_style, column, value)
+      condition = build_condition(argument_type, column, value)
       # And merge it with the already existing conditions.
       conditions = merge_conditions(conditions, condition) if condition.present?
     end
@@ -254,35 +259,35 @@ private
     [conditions]
   end
 
-  # This methods builds a equality condition on column = value. It returns a list (array) of arguments for the where (or similar) call on the relation.
-  # The argument type determines whether the arguments should be applied as a string (one large statement string with values filled in), a list (statement string followed by a list with bind variables), an array (with a statement string and bind variables) or an hash.
-  # The placeholder style determines whether we want to use question mark (?) placeholders, named placeholders (:id) or sprintf type placeholders (%s). This only has effect when the argument type is list or array.
-  # The hash style determines whether we want to create an equality condition, range condition (BETWEEN) or subset condition (IN). This only has effect when the argument type is hash.
-  def build_condition(argument_type, placeholder_style, hash_style, column, value)
+  # This methods builds a condition using the given argument_type on "column = value" (or for hash conditions probably "column IN values" or "column BETWEEN value AND value).
+  # We do not extract the argument type from the @condition_options, since we need to be able to overwrite it for the exists? and ..._by_sql methods.
+  # It returns a list (array) of arguments for the where (or similar method) call on the relation.
+  def build_condition(argument_type = nil, column, value)
     return nil if value.blank? # Reject blank values (this means we do not want to filter on this column)
+    argument_type = @condition_options[:argument_type] if argument_type.nil?
     case argument_type
     when "string"
       # We want to represent the condition as a string. Rails does not apply the sanitization for us (it considers the string safe), so we apply sanitization ourselves using Rails' helper methods.
       ["#{column} = #{AllTypesObject.connection.quote(value)}"]
     when "list"
       # We want to represent the condition as a list (with a string SQL statement and bind values). Rails applies the sanitization for us.
-      build_list_condition(placeholder_style, column, value)
+      build_list_condition(column, value)
     when "array"
       # We want to represent the condition as an array (with the bind values in an array). Rails applies the sanitization for us.
       # This is very similar to the list argument_type (actually, a list with a string SQL statement and bind values is mapped to an array in Rails), we only need to wrap the result in an array.
-     [build_list_condition(placeholder_style, column, value)]
+     [build_list_condition(column, value)]
     when "hash"
       # We want to represent the conditions as a hash. Rails applies the sanitization for us.
       # Placeholder style is ignored for hash arguments (it has no meaning)
-      build_hash_condition(hash_style, column, value)
+      build_hash_condition(column, value)
     else
-      raise "Structure type '#{argument_type}' not supported (it is possible Rails supports this type, but we do not)."
+      raise "Condition option argument type '#{argument_type}' not supported (it is possible Rails supports this type, but we do not)."
     end
   end
 
-  # Builds a list/array condition for colum and value using the given placeholder style.
-  def build_list_condition(placeholder_style, column, value)
-     case placeholder_style
+  # Builds a list/array condition for colum and value using the set placeholder style.
+  def build_list_condition(column, value)
+     case @condition_options[:placeholder_style]
       when "question_mark"
         # Use question mark placeholders. The bind variables are a list/array.
         ["#{column} = ?", value]
@@ -293,13 +298,13 @@ private
         # Use sprintf placeholders. The bind variables are a list/array.
         ["#{column} = '%s'", value] # Rails applies the sanitization, but we still have to put quotes around the variable ourselves
       else
-        raise "Placeholder style '#{placeholder_style}' not supported."
+        raise "Condition option placeholder style '#{@condition_options[:placeholder_style]}' not supported."
       end
   end
 
-  # Builds a hash condition for colum and value using the given hash style.
-  def build_hash_condition(hash_style, column, value)
-     case hash_style
+  # Builds a hash condition for colum and value using the set hash style.
+  def build_hash_condition(column, value)
+     case @condition_options[:hash_style]
       when "equality"
         # We want an equality condition. Directly use value.
         [{ column => value }]
@@ -310,7 +315,7 @@ private
         # We want a subset condition. Wrap value in an array.
         [{ column => [value] }]
       else
-        raise "Hash style '#{hash_style}' not supported."
+        raise "Condition option hash style '#{@condition_options[:hash_style]}' not supported."
       end
   end
 
