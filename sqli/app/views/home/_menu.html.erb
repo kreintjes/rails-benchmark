@@ -1,144 +1,143 @@
 <ul>
   <li>Create tests
     <ul>
-        <li>Class new:
-          <ul>
-              <li><%= link_to 'Create', create_test_class_new_path('create') %></li>
-              <li><%= link_to 'Create!', create_test_class_new_path('create!') %></li>
-              <li>Create array: <%= link_to_amounts 'create_test_class_new_path', 'create_array' %></li>
-              <li>Create! array: <%= link_to_amounts 'create_test_class_new_path', 'create!_array' %></li>
-              <li><%= link_to 'Save', create_test_class_new_path('save') %></li>
-              <li><%= link_to 'Save!', create_test_class_new_path('save!') %></li>
-          </ul>
-        </li>
+      <li>Class create:
+        <ul>
+            <li><%= link_to 'Create', create_test_class_new_path('create') %></li>
+            <li><%= link_to 'Create!', create_test_class_new_path('create!') %></li>
+            <li>Create array: <%= link_to_amounts 'create_test_class_new_path', 'create_array' %></li>
+            <li>Create! array: <%= link_to_amounts 'create_test_class_new_path', 'create!_array' %></li>
+            <li><%= link_to 'Save', create_test_class_new_path('save') %></li>
+            <li><%= link_to 'Save!', create_test_class_new_path('save!') %></li>
+        </ul>
+      </li>
     </ul>
   </li>
   <li>Read tests
     <ul>
-        <li>Object find methods:
-          <ul>
-            <li><%= link_to 'To_a', read_test_class_objects_form_path('to_a') %></li>
-            <li><%= link_to 'All', read_test_class_objects_form_path('all') %></li>
-            <li><%= link_to 'Select', read_test_class_objects_form_path('select') %></li>
-            <li><%= link_to 'First', read_test_class_objects_form_path('first') %></li>
-            <li><%= link_to 'First!', read_test_class_objects_form_path('first!') %></li>
-            <li><%= link_to 'Last', read_test_class_objects_form_path('last') %></li>
-            <li><%= link_to 'Last!', read_test_class_objects_form_path('last!') %></li>
-            <li>Find:
-              <%= link_to 'sub method', read_test_class_objects_form_path('find', 'sub_method') %>
-              <%= link_to 'single id', read_test_class_objects_form_path('find', 'single_id') %>
-              <%= link_to 'id list', read_test_class_objects_form_path('find', 'id_list') %>
-              <%= link_to 'id array', read_test_class_objects_form_path('find', 'id_array') %>
-            </li>
-            <li><%= link_to 'Find_by_...', read_test_class_objects_form_path('dynamic_find_by') %></li>
-            <li><%= link_to 'Find_by_...!', read_test_class_objects_form_path('dynamic_find_by!') %></li>
-            <li><%= link_to 'Find_each', read_test_class_objects_form_path('find_each') %></li>
-            <li><%= link_to 'Find_in_batches', read_test_class_objects_form_path('find_in_batches') %></li>
-            <li><%= link_to 'First_or_initialize', read_test_class_objects_form_path('first_or_initialize') %></li>
-            <li><%= link_to 'First_or_create', read_test_class_objects_form_path('first_or_create') %></li>
-            <li><%= link_to 'First_or_create!', read_test_class_objects_form_path('first_or_create!') %></li>
-          </ul>
-        </li>
-        <li>Value methods:
-          <ul>
-            <li><%= link_to 'Any?', read_test_class_value_form_path('any?') %></li>
-            <li><%= link_to 'Empty?', read_test_class_value_form_path('empty?') %></li>
-            <li><%= link_to 'Many?', read_test_class_value_form_path('many?') %></li>
-            <li><%= link_to 'Size', read_test_class_value_form_path('size') %></li>
-            <li>Exists?: <%= link_to 'no arguments', read_test_class_value_form_path('exists?') %> <%= link_to 'id', read_test_class_value_form_path('exists?', 'id') %> <%= link_to 'conditions array', read_test_class_value_form_path('exists?', 'conditions_array') %> <%= link_to 'conditions hash', read_test_class_value_form_path('exists?', 'conditions_hash') %></li>
-            <li><%= link_to 'Explain', read_test_class_value_form_path('explain') %></li>
-          </ul>
-        </li>
-        <li>Count methods:
-          <ul>
-            <li><%= link_to 'Average', read_test_class_value_form_path('average') %></li>
-            <li><%= link_to 'Count', read_test_class_value_form_path('count') %></li>
-            <li><%= link_to 'Maximum', read_test_class_value_form_path('maximum') %></li>
-            <li><%= link_to 'Minimum', read_test_class_value_form_path('minimum') %></li>
-            <li><%= link_to 'Sum', read_test_class_value_form_path('sum') %></li>
-            <li><%= link_to 'Calculate', read_test_class_value_form_path('calculate') %></li>
-            <li><%= link_to 'Pluck', read_test_class_value_form_path('pluck') %></li>
-          </ul>
-        </li>
-        <li>By SQL methods:
-          <ul>
-            <li>Find_by_sql: <%= link_to 'string', read_test_class_by_sql_form_path('find_by_sql', 'option' => 'string') %> <%= link_to 'array', read_test_class_by_sql_form_path('find_by_sql', 'option' => 'array') %></li>
-            <li>Count_by_sql: <%= link_to 'string', read_test_class_by_sql_form_path('count_by_sql', 'option' => 'string') %> <%= link_to 'array', read_test_class_by_sql_form_path('count_by_sql', 'option' => 'array') %></li>
-          </ul>
-        </li>
+      <li>Object finders:
+        <ul>
+          <li><%= link_to 'To_a', read_test_class_objects_form_path('to_a') %></li>
+          <li><%= link_to 'All', read_test_class_objects_form_path('all') %></li>
+          <li><%= link_to 'Select', read_test_class_objects_form_path('select') %></li>
+          <li><%= link_to 'First', read_test_class_objects_form_path('first') %></li>
+          <li><%= link_to 'First!', read_test_class_objects_form_path('first!') %></li>
+          <li><%= link_to 'Last', read_test_class_objects_form_path('last') %></li>
+          <li><%= link_to 'Last!', read_test_class_objects_form_path('last!') %></li>
+          <li>Find:
+            <%= link_to 'sub method', read_test_class_objects_form_path('find', 'sub_method') %>
+            <%= link_to 'single id', read_test_class_objects_form_path('find', 'single_id') %>
+            <%= link_to 'id list', read_test_class_objects_form_path('find', 'id_list') %>
+            <%= link_to 'id array', read_test_class_objects_form_path('find', 'id_array') %>
+          </li>
+          <li><%= link_to 'Find_by_...', read_test_class_objects_form_path('dynamic_find_by') %></li>
+          <li><%= link_to 'Find_by_...!', read_test_class_objects_form_path('dynamic_find_by!') %></li>
+          <li><%= link_to 'Find_each', read_test_class_objects_form_path('find_each') %></li>
+          <li><%= link_to 'Find_in_batches', read_test_class_objects_form_path('find_in_batches') %></li>
+          <li><%= link_to 'First_or_initialize', read_test_class_objects_form_path('first_or_initialize') %></li>
+          <li><%= link_to 'First_or_create', read_test_class_objects_form_path('first_or_create') %></li>
+          <li><%= link_to 'First_or_create!', read_test_class_objects_form_path('first_or_create!') %></li>
+        </ul>
+      </li>
+      <li>Value methods:
+        <ul>
+          <li><%= link_to 'Any?', read_test_class_value_form_path('any?') %></li>
+          <li><%= link_to 'Empty?', read_test_class_value_form_path('empty?') %></li>
+          <li><%= link_to 'Many?', read_test_class_value_form_path('many?') %></li>
+          <li><%= link_to 'Size', read_test_class_value_form_path('size') %></li>
+          <li>Exists?:
+            <%= link_to 'no arguments', read_test_class_value_form_path('exists?') %>
+            <%= link_to 'id', read_test_class_value_form_path('exists?', 'id') %>
+            <%= link_to 'conditions array', read_test_class_value_form_path('exists?', 'conditions_array') %>
+            <%= link_to 'conditions hash', read_test_class_value_form_path('exists?', 'conditions_hash') %>
+          </li>
+          <li><%= link_to 'Explain', read_test_class_value_form_path('explain') %></li>
+        </ul>
+      </li>
+      <li>Count methods:
+        <ul>
+          <li><%= link_to 'Average', read_test_class_value_form_path('average') %></li>
+          <li><%= link_to 'Count', read_test_class_value_form_path('count') %></li>
+          <li><%= link_to 'Maximum', read_test_class_value_form_path('maximum') %></li>
+          <li><%= link_to 'Minimum', read_test_class_value_form_path('minimum') %></li>
+          <li><%= link_to 'Sum', read_test_class_value_form_path('sum') %></li>
+          <li><%= link_to 'Calculate', read_test_class_value_form_path('calculate') %></li>
+          <li><%= link_to 'Pluck', read_test_class_value_form_path('pluck') %></li>
+        </ul>
+      </li>
+      <li>By SQL methods:
+        <ul>
+          <li>Find_by_sql:
+            <%= link_to 'string', read_test_class_by_sql_form_path('find_by_sql', 'string') %>
+            <%= link_to 'array', read_test_class_by_sql_form_path('find_by_sql', 'array') %>
+          </li>
+          <li>Count_by_sql:
+            <%= link_to 'string', read_test_class_by_sql_form_path('count_by_sql', 'string') %>
+            <%= link_to 'array', read_test_class_by_sql_form_path('count_by_sql', 'array') %>
+          </li>
+        </ul>
+      </li>
     </ul>
   </li>
   <li>Update tests
     <ul>
-        <li>Object single edit:
-          <ul>
-              <li>Update attribute: <%= link_to_objects 'update_test_object_single_edit_path', 'update_attribute' %></li>
-              <li>Update column: <%= link_to_objects 'update_test_object_single_edit_path', 'update_column' %></li>
-              <li>Increment: <%= link_to_objects 'update_test_object_single_edit_path', 'increment' %></li>
-              <li>Decrement: <%= link_to_objects 'update_test_object_single_edit_path', 'decrement' %></li>
-              <li>Toggle: <%= link_to_objects 'update_test_object_single_edit_path', 'toggle' %></li>
-              <li>Touch: <%= link_to_objects 'update_test_object_single_edit_path', 'touch' %></li>
-              <li>Save: <%= link_to_objects 'update_test_object_single_edit_path', 'save' %></li>
-              <li>Save!: <%= link_to_objects 'update_test_object_single_edit_path', 'save!' %></li>
-          </ul>
-        </li>
-        <li>Object multi edit:
-          <ul>
-              <li>Update attributes: <%= link_to_objects 'update_test_object_multi_edit_path', 'update_attributes' %></li>
-              <li>Update attributes!: <%= link_to_objects 'update_test_object_multi_edit_path', 'update_attributes!' %></li>
-              <li>Save: <%= link_to_objects 'update_test_object_multi_edit_path', 'save' %></li>
-              <li>Save!: <%= link_to_objects 'update_test_object_multi_edit_path', 'save!' %></li>
-          </ul>
-        </li>
-        <li>Class update edit:
-          <ul>
-              <li><%= link_to 'Single', update_test_class_update_edit_path('single') %></li>
-              <li><%= link_to 'Multi', update_test_class_update_edit_path('multi') %></li>
-          </ul>
-        </li>
-        <li>Class update all edit:
-          <ul>
-              <li><%= link_to 'String', update_test_class_update_all_edit_path('string') %></li>
-              <li><%= link_to 'Array', update_test_class_update_all_edit_path('array') %></li>
-              <li><%= link_to 'Hash', update_test_class_update_all_edit_path('hash') %></li>
-          </ul>
-        </li>
+      <li>Object single update:
+        <ul>
+            <li>Update attribute: <%= link_to_objects 'update_test_object_single_edit_path', 'update_attribute' %></li>
+            <li>Update column: <%= link_to_objects 'update_test_object_single_edit_path', 'update_column' %></li>
+            <li>Increment!: <%= link_to_objects 'update_test_object_single_edit_path', 'increment!' %></li>
+            <li>Decrement!: <%= link_to_objects 'update_test_object_single_edit_path', 'decrement!' %></li>
+            <li>Toggle!: <%= link_to_objects 'update_test_object_single_edit_path', 'toggle!' %></li>
+            <li>Touch: <%= link_to_objects 'update_test_object_single_edit_path', 'touch' %></li>
+            <li>Save: <%= link_to_objects 'update_test_object_single_edit_path', 'save' %></li>
+            <li>Save!: <%= link_to_objects 'update_test_object_single_edit_path', 'save!' %></li>
+        </ul>
+      </li>
+      <li>Object multiple updates:
+        <ul>
+            <li>Update attributes: <%= link_to_objects 'update_test_object_multi_edit_path', 'update_attributes' %></li>
+            <li>Update attributes!: <%= link_to_objects 'update_test_object_multi_edit_path', 'update_attributes!' %></li>
+            <li>Save: <%= link_to_objects 'update_test_object_multi_edit_path', 'save' %></li>
+            <li>Save!: <%= link_to_objects 'update_test_object_multi_edit_path', 'save!' %></li>
+        </ul>
+      </li>
+      <li>Class update:
+        <%= link_to 'Single', update_test_class_update_edit_path('single') %>
+        <%= link_to 'Multi', update_test_class_update_edit_path('multi') %>
+      </li>
+      <li>Class update all:
+        <%= link_to 'String', update_test_class_update_all_edit_path('string') %>
+        <%= link_to 'Array', update_test_class_update_all_edit_path('array') %>
+        <%= link_to 'Hash', update_test_class_update_all_edit_path('hash') %>
+      </li>
     </ul>
   </li>
   <li>Delete tests
     <ul>
-        <li>Class delete form:
-          <ul>
-              <li><%= link_to 'Single', delete_test_class_delete_form_path('single') %></li>
-              <li><%= link_to 'Multi', delete_test_class_delete_form_path('multi') %></li>
-          </ul>
-        </li>
-        <li>Class destroy form:
-          <ul>
-              <li><%= link_to 'Single', delete_test_class_destroy_form_path('single') %></li>
-              <li><%= link_to 'Multi', delete_test_class_destroy_form_path('multi') %></li>
-          </ul>
-        </li>
-        <li>Class delete all form:
-          <ul>
-              <li><%= link_to 'String', delete_test_class_delete_all_form_path('string') %></li>
-              <li><%= link_to 'Array', delete_test_class_delete_all_form_path('array') %></li>
-              <li><%= link_to 'Hash', delete_test_class_delete_all_form_path('hash') %></li>
-          </ul>
-        </li>
-        <li>Class destroy all form:
-          <ul>
-              <li><%= link_to 'String', delete_test_class_destroy_all_form_path('string') %></li>
-              <li><%= link_to 'Array', delete_test_class_destroy_all_form_path('array') %></li>
-              <li><%= link_to 'Hash', delete_test_class_destroy_all_form_path('hash') %></li>
-          </ul>
-        </li>
-        <li>Object remove:
-          <ul>
-              <li>Delete: <%= link_to_objects 'delete_test_object_remove_path', 'delete' %></li>
-              <li>Destroy: <%= link_to_objects 'delete_test_object_remove_path', 'destroy' %></li>
-          </ul>
-        </li>
+      <li>Object remove:
+        <ul>
+            <li>Delete: <%= link_to_objects 'delete_test_object_remove_path', 'delete' %></li>
+            <li>Destroy: <%= link_to_objects 'delete_test_object_remove_path', 'destroy' %></li>
+        </ul>
+      </li>s
+      <li>Class delete:
+        <%= link_to 'Single', delete_test_class_delete_form_path('single') %>
+        <%= link_to 'Multi', delete_test_class_delete_form_path('multi') %>
+      </li>
+      <li>Class destroy:
+        <%= link_to 'Single', delete_test_class_destroy_form_path('single') %>
+        <%= link_to 'Multi', delete_test_class_destroy_form_path('multi') %>
+      </li>
+      <li>Class delete all:
+        <%= link_to 'String', delete_test_class_delete_all_form_path('string') %>
+        <%= link_to 'Array', delete_test_class_delete_all_form_path('array') %>
+        <%= link_to 'Hash', delete_test_class_delete_all_form_path('hash') %>
+      </li>
+      <li>Class destroy all:
+        <%= link_to 'String', delete_test_class_destroy_all_form_path('string') %>
+        <%= link_to 'Array', delete_test_class_destroy_all_form_path('array') %>
+        <%= link_to 'Hash', delete_test_class_destroy_all_form_path('hash') %>
+      </li>
     </ul>
   </li>
 </ul>

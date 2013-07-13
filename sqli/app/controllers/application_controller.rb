@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   CONDITIONS_APPLY_METHODS = ["separated", "joined"]
   CONDITIONS_ARGUMENT_TYPES = ["string", "list", "array", "hash"]
   CONDITIONS_PLACEHOLDER_STYLES = ["question_mark", "named", "sprintf"]
+  CONDITIONS_HASH_STYLES = ["equality", "range", "subset"]
 
   def reload_objects(objects)
     if @all_types_object.respond_to?(:map)

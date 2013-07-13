@@ -5,7 +5,6 @@ class UpdateTestController < ApplicationController
   def object_single_edit
     # Find the object we want to edit (by its ID).
     @all_types_object = AllTypesObject.find(params[:id])
-    params[:method] = "update_attribute" if params[:method].nil?
     case params[:method]
     when "increment", "decrement"
       # Render the by field.
@@ -24,7 +23,7 @@ class UpdateTestController < ApplicationController
     # Find the object we want to update by its ID.
     @all_types_object = AllTypesObject.find(params[:id])
     case params[:method]
-    when "increment", "decrement"
+    when "increment!", "decrement!"
       # Increment the object's attribute :attribute by :by with Rails increment! method.
       begin
         # First try it with the raw data (which will be a string).
@@ -37,7 +36,7 @@ class UpdateTestController < ApplicationController
           @all_types_object.send("#{params[:method]}!", params[:attribute])
         end
       end
-    when "toggle"
+    when "toggle!"
       # Toggle (boolean switch) the attribute :attribute with Rails toggle! method.
       @all_types_object.toggle!(params[:attribute])
     when "touch"
@@ -62,7 +61,6 @@ class UpdateTestController < ApplicationController
   def object_multi_edit
     # Find the object we want to edit by its ID.
     @all_types_object = AllTypesObject.find(params[:id])
-    params[:method] = "update_attributes" if params[:method].nil?
   end
 
   # We want to update multiple attributes of the object through its instance methods.
@@ -90,15 +88,14 @@ class UpdateTestController < ApplicationController
   # We want a form to edit multiple attributes of an object/multiple objects through the class method update.
   def class_update_edit
     @all_types_object = AllTypesObject.new
-    params[:method] = "single" if params[:method].nil?
     # Setting some data for the view.
-    @multi = (params[:method] == "multi")
+    @multi = (params[:option] == "multi")
     @name = (@multi ? AllTypesObject.model_name.human.pluralize : AllTypesObject.model_name.human)
   end
 
   # We want to update multiple attributes of an object/multiple objects through the class method update.
   def class_update_update
-    if params[:method] == "multi"
+    if params[:option] == "multi"
       # Convert the attributes to an array of attributes (one for each of the objects we want to edit).
       params[:all_types_object] = Array.new(params[:id].size) { params[:all_types_object] }
     end
@@ -112,13 +109,12 @@ class UpdateTestController < ApplicationController
   # We want a form to edit multiple attributes of objects through the class method update_all.
   def class_update_all_edit
     @all_types_object = AllTypesObject.new
-    params[:method] = "string" if params[:method].nil?
   end
 
   # We want to update multiple attributes of objects through the class method update_all.
   def class_update_all_update
     # Determine the updates.
-    case params[:method]
+    case params[:option]
     when "string"
       # We want to represent the updates as a string. Rails considers the string to be safe, so we apply our own sanitization through Rails quote method.
       # XXX TODO This is a bit of an artificial use of this method. Should we even include this test or just stick with the safe array and hash methods (and test the quote method in some other way)?
@@ -130,7 +126,7 @@ class UpdateTestController < ApplicationController
       # We want to represent the updates as a hash. Rails applies the sanitization for us.
       updates = params[:all_types_object].reject { |k, v| v.blank? }
     else
-      raise "Unknown method '#{params[:method]}'"
+      raise "Unknown option '#{params[:option]}'"
     end
     # Determine the conditions.
     conditions = nil # XXX TODO are we going to support this option? It is basically a where call, so we will consider it anyway with the Read tests.

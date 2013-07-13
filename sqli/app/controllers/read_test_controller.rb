@@ -217,13 +217,14 @@ private
     apply_method = data[:apply_method]
     argument_type = data[:argument_type]
     placeholder_style = data[:placeholder_style]
+    hash_style = data[:hash_style]
     values = data[:values]
     if(apply_method == 'separated')
       # We want to apply the conditions separated (one where call per condition). Build an array containing all the separate conditions in the right format.
-      conditions = build_separated_conditions(argument_type, placeholder_style, values)
+      conditions = build_separated_conditions(argument_type, placeholder_style, hash_style, values)
     else
       # We want to apply the conditions joined (one where call for all conditions). Build an array containing one large condition in the right format.
-      conditions = build_joined_conditions(argument_type, placeholder_style, values)
+      conditions = build_joined_conditions(argument_type, placeholder_style, hash_style, values)
     end
     # Apply the formatted conditions on the relation using method.
     apply_conditions(relation, method, conditions)
@@ -231,22 +232,21 @@ private
 
   # Apply formatted conditions (method arguments) on the relation using method.
   def apply_conditions(relation, method, conditions)
-    #conditions.each { |condition| puts "Applying " + condition.inspect if condition.present? } # Debug information
     conditions.each { |condition| relation = relation.send(method, *condition) if condition.present? }
     relation
   end
 
   # Build/format separated conditions. Returns an array with a (formatted) element for each condition.
-  def build_separated_conditions(argument_type, placeholder_style, values)
-    values.map { |column, value| build_condition(argument_type, placeholder_style, column, value) }
+  def build_separated_conditions(argument_type, placeholder_style, hash_style, values)
+    values.map { |column, value| build_condition(argument_type, placeholder_style, hash_style, column, value) }
   end
 
   # Build/format joined conditions. Returns an array with one formatted element representing all the conditions.
-  def build_joined_conditions(argument_type, placeholder_style, values)
+  def build_joined_conditions(argument_type, placeholder_style, hash_style, values)
     conditions = nil
     values.each do |column, value|
       # Format the next condition
-      condition = build_condition(argument_type, placeholder_style, column, value)
+      condition = build_condition(argument_type, placeholder_style, hash_style, column, value)
       # And merge it with the already existing conditions.
       conditions = merge_conditions(conditions, condition) if condition.present?
     end
@@ -255,9 +255,10 @@ private
   end
 
   # This methods builds a equality condition on column = value. It returns a list (array) of arguments for the where (or similar) call on the relation.
-  # The argument type determines whether the arguments should be applied as a string (followed by a list with bind variables), an array (with a statement string and bind variables) or an hash.
-  # The placeholder style determines whether we want to use question mark (?) placeholders, named placeholders (:id) or sprintf type placeholders (%s). This only has effect when argument type is string or array.
-  def build_condition(argument_type, placeholder_style, column, value)
+  # The argument type determines whether the arguments should be applied as a string (one large statement string with values filled in), a list (statement string followed by a list with bind variables), an array (with a statement string and bind variables) or an hash.
+  # The placeholder style determines whether we want to use question mark (?) placeholders, named placeholders (:id) or sprintf type placeholders (%s). This only has effect when the argument type is list or array.
+  # The hash style determines whether we want to create an equality condition, range condition (BETWEEN) or subset condition (IN). This only has effect when the argument type is hash.
+  def build_condition(argument_type, placeholder_style, hash_style, column, value)
     return nil if value.blank? # Reject blank values (this means we do not want to filter on this column)
     case argument_type
     when "string"
@@ -265,7 +266,23 @@ private
       ["#{column} = #{AllTypesObject.connection.quote(value)}"]
     when "list"
       # We want to represent the condition as a list (with a string SQL statement and bind values). Rails applies the sanitization for us.
-      case placeholder_style
+      build_list_condition(placeholder_style, column, value)
+    when "array"
+      # We want to represent the condition as an array (with the bind values in an array). Rails applies the sanitization for us.
+      # This is very similar to the list argument_type (actually, a list with a string SQL statement and bind values is mapped to an array in Rails), we only need to wrap the result in an array.
+     [build_list_condition(placeholder_style, column, value)]
+    when "hash"
+      # We want to represent the conditions as a hash. Rails applies the sanitization for us.
+      # Placeholder style is ignored for hash arguments (it has no meaning)
+      build_hash_condition(hash_style, column, value)
+    else
+      raise "Structure type '#{argument_type}' not supported (it is possible Rails supports this type, but we do not)."
+    end
+  end
+
+  # Builds a list/array condition for colum and value using the given placeholder style.
+  def build_list_condition(placeholder_style, column, value)
+     case placeholder_style
       when "question_mark"
         # Use question mark placeholders. The bind variables are a list/array.
         ["#{column} = ?", value]
@@ -274,21 +291,27 @@ private
         ["#{column} = :#{column}", {column.to_sym => value}]
       when "sprintf"
         # Use sprintf placeholders. The bind variables are a list/array.
-        ["#{column} = '%s'", value] # XXX TODO we put quotes around %s ourselves, but it is doubtful if we should be responsible for this. However, at least this way things will not break for strings (but they might for other types).
+        ["#{column} = '%s'", value] # Rails applies the sanitization, but we still have to put quotes around the variable ourselves
       else
         raise "Placeholder style '#{placeholder_style}' not supported."
       end
-    when "array"
-      # We want to represent the condition as an array (with the bind values in an array). Rails applies the sanitization for us.
-      # This is very similar to the list argument_type (actually, a list with a string SQL statement and bind values is mapped to an array in Rails), we only need to wrap the result in an array.
-     [build_condition("list", placeholder_style, column, value)]
-    when "hash"
-      # We want to represent the conditions as a hash. Rails applies the sanitization for us.
-      # Placeholder style is ignored for hash arguments (it has no meaning)
-      [{ column => value }]
-    else
-      raise "Structure type '#{argument_type}' not supported (it is possible Rails supports this type, but we do not)."
-    end
+  end
+
+  # Builds a hash condition for colum and value using the given hash style.
+  def build_hash_condition(hash_style, column, value)
+     case hash_style
+      when "equality"
+        # We want an equality condition. Directly use value.
+        [{ column => value }]
+      when "range"
+        # We want a range condition. Wrap value in a range.
+        [{ column => value..value }]
+      when "subset"
+        # We want a subset condition. Wrap value in an array.
+        [{ column => [value] }]
+      else
+        raise "Hash style '#{hash_style}' not supported."
+      end
   end
 
   # This methods merges the already existing formatted conditions (list) with the new formatted condition (list).

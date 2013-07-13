@@ -3,6 +3,10 @@
     <%= label_tag('conditions[placeholder_style]') %><br />
     <%= select_tag('conditions[placeholder_style]', options_for_select(ApplicationController::CONDITIONS_PLACEHOLDER_STYLES)) %>
   </div>
+  <div class="field">
+    <%= label_tag('conditions[hash_style]') %><br />
+    <%= select_tag('conditions[hash_style]', options_for_select(ApplicationController::CONDITIONS_HASH_STYLES)) %>
+  </div>
   <%= fields_for "conditions[values]", AllTypesObject.new do |f| %>
     <%= render 'all_types_objects/fields', :f => f, :for_conditions => true %>
   <% end %>
