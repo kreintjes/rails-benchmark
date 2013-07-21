@@ -1,3 +1,5 @@
+<h1><%= params[:controller].humanize %> - <%= params[:action].humanize %> - <%= params[:method].humanize %></h1>
+
 <% if @result.respond_to?(:each) # We are dealing with a collection of objects %>
   <% @result.each do |all_types_object| %>
     <%= render 'all_types_objects/show', :all_types_object => all_types_object %>

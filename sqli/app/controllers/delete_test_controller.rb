@@ -1,119 +1,56 @@
 class DeleteTestController < ApplicationController
-  before_filter :only => [:class_delete_perform, :class_destroy_perform, :class_delete_all_perform, :class_destroy_all_perform, :object_remove] { @show_last_queries = true }
+  before_filter :only => [:relation_perform, :object_remove] { @show_last_queries = true }
 
-  # We want a form to delete an object/multiple objects through the class method delete.
-  def class_delete_form
-    # Setting some data for the view.
-    @multi = (params[:option] == "multi")
-    @name = (@multi ? AllTypesObject.model_name.human.pluralize : AllTypesObject.model_name.human)
+  # We want a form to delete an object/multiple objects through a relation method.
+  def relation_form
+    case params[:method]
+    when "delete", "destroy"
+      @partial = (params[:option] == "single" ? "shared/id_select" : "shared/id_multi_select")
+    when "delete_all", "destroy_all"
+      @partial = "shared/conditions"
+    end
   end
 
-  # We want to delete an object/multiple objects through the class method delete.
-  def class_delete_perform
-    if params[:id].blank?
-      @result = "Please select one or more objects."
-      render 'class_result'
-      return
+  # We want to delete an object/multiple objects through a relation method.
+  def relation_perform
+    # Build the relation depending on the various options (query methods).
+    relation = AllTypesObject.scoped
+    # Extract and apply query methods
+    relation = apply_query_methods(relation, params)
+
+    case params[:method]
+    when "delete", "destroy"
+      return redirect_to(delete_test_relation_form_path(params[:method], params[:option]), :alert => "Please enter one or more ids") if params[:method] == "destroy" && params[:id].blank?
+      # Delete or find and destroy the object(s) by its/their ID(s) through the relation delete or destroy method.
+      amount = relation.send(params[:method], params[:id])
+      amount = [amount].flatten.size if params[:method] == "destroy"
+    when "delete_all", "destroy_all"
+      # Determine the conditions
+      case params[:option]
+      when "string"
+        # We want to represent the conditions as a string. Rails considers the string to be safe, so we apply our own sanitization through Rails quote method.
+        conditions = build_conditions('joined', 'string', params[:conditions]).first
+      when "array"
+        # We want to represent the conditions as an array. Rails applies the sanitization for us.
+        conditions = build_conditions('joined', 'array', params[:conditions]).first
+      when "hash"
+        # We want to represent the conditions as a hash. Rails applies the sanitization for us.
+        conditions = build_conditions('joined', 'hash', params[:conditions]).first
+      else
+        raise "Unknown option '#{params[:option]}'"
+      end
+      puts conditions.inspect
+      # Find and update the objects through the relation update_all method.
+      amount = relation.send(params[:method], *conditions)
+      amount = amount.size if params[:method] == "destroy_all"
     end
-    # Find and delete the object(s) by its/their ID(s).
-    success = AllTypesObject.delete(params[:id])
-    objects = (params[:option] == 'single' ? "object #{params[:id]}" :  "objects #{params[:id].to_sentence}")
-    if success
-      @result = "#{objects} deleted!".capitalize
+    # Render the responses
+    if params[:method] == "delete"
+      @result = "#{amount} object(s) deleted"
     else
-      @result = "Deleting #{objects} failed... :("
+      @result = "#{amount} object(s) destroyed"
     end
-    render 'class_result'
-  end
-
-  # We want a form to destroy an object/multiple objects through the class method destroy.
-  def class_destroy_form
-    # Setting some data for the view.
-    @multi = (params[:option] == "multi")
-    @name = (@multi ? AllTypesObject.model_name.human.pluralize : AllTypesObject.model_name.human)
-  end
-
-  # We want to destroy an object/multiple objects through the class method destroy.
-  def class_destroy_perform
-    if params[:id].blank?
-      @result = "Please select one or more objects."
-      render 'class_result'
-      return
-    end
-    # Find and destroy the object(s) by its/their ID(s).
-    success = AllTypesObject.destroy(params[:id])
-    objects = (params[:option] == 'single' ? "object #{params[:id]}" : "objects #{params[:id].to_sentence}")
-    if success
-      @result = "#{objects} destroyed!".capitalize
-    else
-      @result = "Destroying #{objects} failed... :("
-    end
-    render 'class_result'
-  end
-
-  # We want a form to delete objects through the class method delete_all.
-  def class_delete_all_form
-    @all_types_object = AllTypesObject.new
-  end
-
-  # We want to delete objects through the class method delete_all.
-  def class_delete_all_perform
-    # Determine the conditions
-    case params[:option]
-    when "string"
-      # We want to represent the conditions as a string. Rails considers the string to be safe, so we apply our own sanitization through Rails quote method.
-      conditions = params[:all_types_object].reject { |k, v| v.blank? }.map { |k, v| "#{k} = #{AllTypesObject.connection.quote(v)}" }.join(",")
-    when "array"
-      # We want to represent the conditions as an array. Rails applies the sanitization for us.
-      conditions = params[:all_types_object].reject { |k, v| v.blank? }.map { |k, v| ["#{k} = ?", v] }.flatten
-    when "hash"
-      # We want to represent the conditions as a hash. Rails applies the sanitization for us.
-      conditions = params[:all_types_object].reject { |k, v| v.blank? }
-    else
-      raise "Unknown option '#{params[:option]}'"
-    end
-    # Perform the delete_all
-    affected = 0
-    if conditions.present?
-      affected = AllTypesObject.delete_all(conditions)
-    else
-      affected = AllTypesObject.delete_all # Enable/disable the delete all without conditions test?
-    end
-    @result = "#{affected} object(s) deleted!".capitalize
-    render 'class_result'
-  end
-
-  # We want a form to destroy objects through the class method destroy_all.
-  def class_destroy_all_form
-    @all_types_object = AllTypesObject.new
-  end
-
-  # We want to destroy objects through the class method destroy_all.
-  def class_destroy_all_perform
-    # Determine the conditions
-    case params[:option]
-    when "string"
-      # We want to represent the conditions as a string. Rails considers the string to be safe, so we apply our own sanitization through Rails quote method.
-      conditions = params[:all_types_object].reject { |k, v| v.blank? }.map { |k, v| "#{k} = #{AllTypesObject.connection.quote(v)}" }.join(",")
-    when "array"
-      # We want to represent the conditions as an array. Rails applies the sanitization for us.
-      conditions = params[:all_types_object].reject { |k, v| v.blank? }.map { |k, v| ["#{k} = ?", v] }.flatten
-    when "hash"
-      # We want to represent the conditions as a hash. Rails applies the sanitization for us.
-      conditions = params[:all_types_object].reject { |k, v| v.blank? }
-    else
-      raise "Unknown option '#{params[:option]}'"
-    end
-    # Perform the destroy_all
-    affected = []
-    if conditions.present?
-      affected = AllTypesObject.destroy_all(conditions)
-    else
-      affected = AllTypesObject.destroy_all # Enable/disable the destroy all without conditions test?
-    end
-    affected = affected.map(&:id).to_sentence
-    @result = "object(s) #{affected} destroyed!".capitalize
-    render 'class_result'
+    respond_with(@result)
   end
 
   # We want to remove an object through its object methods.

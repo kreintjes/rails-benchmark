@@ -167,7 +167,7 @@ private
       "shared/id_multi_select"
     when "conditions_array", "conditions_hash"
       # Render the conditions fields.
-      @partial = "conditions"
+      @partial = "shared/conditions"
     when "sub_method", "amount", "dynamic_find_by", "batches", "attributes"
       # Render the corresponding option field(s).
       params[:option]

@@ -1,9 +1,0 @@
-<h1><%= params[:controller].humanize %> - <%= params[:action].humanize %> - <%= params[:option].humanize %></h1>
-
-<%= form_for(@all_types_object, :url => delete_test_class_delete_all_perform_path(params[:option]), :method => "delete") do |f| %>
-  <h2>Conditions</h2>
-  <%= render 'all_types_objects/fields', :f => f, :for_conditions => true %>
-  <div class="actions">
-    <%= f.submit "Delete All types objects" %>
-  </div>
-<% end %>

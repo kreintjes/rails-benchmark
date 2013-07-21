@@ -20,6 +20,7 @@ class UpdateTestController < ApplicationController
 
     case params[:method]
     when "update"
+      return redirect_to(update_test_relation_edit_path(params[:method], params[:option]), :alert => "Please enter one or more ids") if params[:id].blank?
       if params[:option] == "multi"
         # Convert the attributes to an array of attributes (one for each of the objects we want to edit).
         params[:updates] = Array.new(params[:id].size) { params[:updates] }
@@ -43,7 +44,7 @@ class UpdateTestController < ApplicationController
       else
         raise "Unknown option '#{params[:option]}'"
       end
-      raise "No updates given" if updates.nil?
+      return redirect_to(update_test_relation_edit_path(params[:method], params[:option]), :alert => "Please enter one or more values as updates") if updates.nil?
       # Find and update the objects through the relation update_all method.
       relation.update_all(updates)
       begin

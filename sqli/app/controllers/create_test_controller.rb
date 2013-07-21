@@ -37,7 +37,7 @@ class CreateTestController < ApplicationController
     end
 
     # Retrieve the new object(s) fresh from the database. This way the scanners can check if the response is as expected and if there might be an SQL injection.
-    reload_objects(@all_type_object)
+    reload_objects(@all_types_object)
     respond_with(@all_types_object)
   end
 end

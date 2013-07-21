@@ -17,21 +17,15 @@ Sqli::Application.routes.draw do
   match "read_test/class_by_sql_perform/:method(/:option)", :controller => 'read_test', :action => 'class_by_sql_perform', :via => 'post', :as => 'read_test_class_by_sql_perform'
 
   # Update tests
-  match "update_test/relation_edit/:method(/:option)", :controller => 'update_test', :action => 'relation_edit', :via => 'get', :as => 'update_test_relation_edit'
-  match "update_test/relation_update/:method(/:option)", :controller => 'update_test', :action => 'relation_update', :via => 'put', :as => 'update_test_relation_update'
+  match "update_test/relation_edit/:method/:option", :controller => 'update_test', :action => 'relation_edit', :via => 'get', :as => 'update_test_relation_edit'
+  match "update_test/relation_update/:method/:option", :controller => 'update_test', :action => 'relation_update', :via => 'put', :as => 'update_test_relation_update'
   match "update_test/object_single_edit/:id/:method", :controller => 'update_test', :action => 'object_single_edit', :via => 'get', :as => 'update_test_object_single_edit'
   match "update_test/object_single_update/:id/:method", :controller => 'update_test', :action => 'object_single_update', :via => 'put', :as => 'update_test_object_single_update'
   match "update_test/object_multi_edit/:id/:method", :controller => 'update_test', :action => 'object_multi_edit', :via => 'get', :as => 'update_test_object_multi_edit'
   match "update_test/object_multi_update/:id/:method", :controller => 'update_test', :action => 'object_multi_update', :via => 'put', :as => 'update_test_object_multi_update'
 
   # Delete tests
-  match "delete_test/class_delete_form/:option", :controller => 'delete_test', :action => 'class_delete_form', :via => 'get', :as => 'delete_test_class_delete_form'
-  match "delete_test/class_delete_perform/:option", :controller => 'delete_test', :action => 'class_delete_perform', :via => 'delete', :as => 'delete_test_class_delete_perform'
-  match "delete_test/class_destroy_form/:option", :controller => 'delete_test', :action => 'class_destroy_form', :via => 'get', :as => 'delete_test_class_destroy_form'
-  match "delete_test/class_destroy_perform/:option", :controller => 'delete_test', :action => 'class_destroy_perform', :via => 'delete', :as => 'delete_test_class_destroy_perform'
-  match "delete_test/class_delete_all_form/:option", :controller => 'delete_test', :action => 'class_delete_all_form', :via => 'get', :as => 'delete_test_class_delete_all_form'
-  match "delete_test/class_delete_all_perform/:option", :controller => 'delete_test', :action => 'class_delete_all_perform', :via => 'delete', :as => 'delete_test_class_delete_all_perform'
-  match "delete_test/class_destroy_all_form/:option", :controller => 'delete_test', :action => 'class_destroy_all_form', :via => 'get', :as => 'delete_test_class_destroy_all_form'
-  match "delete_test/class_destroy_all_perform/:option", :controller => 'delete_test', :action => 'class_destroy_all_perform', :via => 'delete', :as => 'delete_test_class_destroy_all_perform'
+  match "delete_test/relation_form/:method/:option", :controller => 'delete_test', :action => 'relation_form', :via => 'get', :as => 'delete_test_relation_form'
+  match "delete_test/relation_perform/:method/:option", :controller => 'delete_test', :action => 'relation_perform', :via => 'delete', :as => 'delete_test_relation_perform'
   match "delete_test/object_remove/:id/:method", :controller => 'delete_test', :action => 'object_remove', :via => 'get', :as => 'delete_test_object_remove'
 end

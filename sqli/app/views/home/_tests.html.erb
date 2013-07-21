@@ -100,22 +100,22 @@
       </li>
       <li>Object single update:
         <ul>
-            <li>Update attribute: <%= link_to_objects 'update_test_object_single_edit_path', 'update_attribute' %></li>
-            <li>Update column: <%= link_to_objects 'update_test_object_single_edit_path', 'update_column' %></li>
-            <li>Increment!: <%= link_to_objects 'update_test_object_single_edit_path', 'increment!' %></li>
-            <li>Decrement!: <%= link_to_objects 'update_test_object_single_edit_path', 'decrement!' %></li>
-            <li>Toggle!: <%= link_to_objects 'update_test_object_single_edit_path', 'toggle!' %></li>
-            <li>Touch: <%= link_to_objects 'update_test_object_single_edit_path', 'touch' %></li>
-            <li>Save: <%= link_to_objects 'update_test_object_single_edit_path', 'save' %></li>
-            <li>Save!: <%= link_to_objects 'update_test_object_single_edit_path', 'save!' %></li>
+            <li>Update attribute: <%= link_to_objects('update_test_object_single_edit_path', 'update_attribute') %></li>
+            <li>Update column: <%= link_to_objects('update_test_object_single_edit_path', 'update_column') %></li>
+            <li>Increment!: <%= link_to_objects('update_test_object_single_edit_path', 'increment!') %></li>
+            <li>Decrement!: <%= link_to_objects('update_test_object_single_edit_path', 'decrement!') %></li>
+            <li>Toggle!: <%= link_to_objects('update_test_object_single_edit_path', 'toggle!') %></li>
+            <li>Touch: <%= link_to_objects('update_test_object_single_edit_path', 'touch') %></li>
+            <li>Save: <%= link_to_objects('update_test_object_single_edit_path', 'save') %></li>
+            <li>Save!: <%= link_to_objects('update_test_object_single_edit_path', 'save!') %></li>
         </ul>
       </li>
       <li>Object multiple updates:
         <ul>
-            <li>Update attributes: <%= link_to_objects 'update_test_object_multi_edit_path', 'update_attributes' %></li>
-            <li>Update attributes!: <%= link_to_objects 'update_test_object_multi_edit_path', 'update_attributes!' %></li>
-            <li>Save: <%= link_to_objects 'update_test_object_multi_edit_path', 'save' %></li>
-            <li>Save!: <%= link_to_objects 'update_test_object_multi_edit_path', 'save!' %></li>
+            <li>Update attributes: <%= link_to_objects('update_test_object_multi_edit_path', 'update_attributes') %></li>
+            <li>Update attributes!: <%= link_to_objects('update_test_object_multi_edit_path', 'update_attributes!') %></li>
+            <li>Save: <%= link_to_objects('update_test_object_multi_edit_path', 'save') %></li>
+            <li>Save!: <%= link_to_objects('update_test_object_multi_edit_path', 'save!') %></li>
         </ul>
       </li>
     </ul>
@@ -125,29 +125,29 @@
       <li>Relation methods:
           <ul>
             <li>Delete:
-              <%= link_to 'Single', delete_test_class_delete_form_path('single') %>
-              <%= link_to 'Multi', delete_test_class_delete_form_path('multi') %>
+              <%= link_to 'Single', delete_test_relation_form_path('delete', 'single') %>
+              <%= link_to 'Multi', delete_test_relation_form_path('delete', 'multi') %>
             </li>
             <li>Destroy:
-              <%= link_to 'Single', delete_test_class_destroy_form_path('single') %>
-              <%= link_to 'Multi', delete_test_class_destroy_form_path('multi') %>
+              <%= link_to 'Single', delete_test_relation_form_path('destroy', 'single') %>
+              <%= link_to 'Multi', delete_test_relation_form_path('destroy', 'multi') %>
             </li>
             <li>Delete all:
-              <%= link_to 'String', delete_test_class_delete_all_form_path('string') %>
-              <%= link_to 'Array', delete_test_class_delete_all_form_path('array') %>
-              <%= link_to 'Hash', delete_test_class_delete_all_form_path('hash') %>
+              <%= link_to 'String', delete_test_relation_form_path('delete_all', 'string') %>
+              <%= link_to 'Array', delete_test_relation_form_path('delete_all', 'array') %>
+              <%= link_to 'Hash', delete_test_relation_form_path('delete_all', 'hash') %>
             </li>
             <li>Destroy all:
-              <%= link_to 'String', delete_test_class_destroy_all_form_path('string') %>
-              <%= link_to 'Array', delete_test_class_destroy_all_form_path('array') %>
-              <%= link_to 'Hash', delete_test_class_destroy_all_form_path('hash') %>
+              <%= link_to 'String', delete_test_relation_form_path('destroy_all', 'string') %>
+              <%= link_to 'Array', delete_test_relation_form_path('destroy_all', 'array') %>
+              <%= link_to 'Hash', delete_test_relation_form_path('destroy_all', 'hash') %>
             </li>
           </ul>
       </li>
       <li>Object remove:
         <ul>
-            <li>Delete: <%= link_to_objects 'delete_test_object_remove_path', 'delete' %></li>
-            <li>Destroy: <%= link_to_objects 'delete_test_object_remove_path', 'destroy' %></li>
+            <li>Delete: <%= link_to_objects('delete_test_object_remove_path', 'delete') %></li>
+            <li>Destroy: <%= link_to_objects('delete_test_object_remove_path', 'destroy') %></li>
         </ul>
       </li>
     </ul>
