@@ -9,13 +9,13 @@
   <div>Placeholder style: <strong><%= @condition_options[:placeholder_style] %></strong></div>
   <div>Hash style: <strong><%= @condition_options[:hash_style] %></strong></div>
 <% else %>
-<%= form_tag home_update_condition_options_path do %>
+<%= form_tag(home_update_condition_options_path) do %>
   <p>
     The form below can be used to change the various condition options (apply_method, argument_type, placeholder_style, hash_style).<br />
     Conditions (mostly applied using the where or having method) can be set in various ways.<br />
     The options below control these ways.<br />
     These settings are global. They will be used for all methods using conditions.<br />
-    <div style="text-decoration: underline;">Note: make sure to disable the condition options form before running the tests. Do this by setting HomeController::CONDITION_OPTIONS_READONLY to true.</div>
+    <div style="font-weight: bold; text-decoration: underline;">Note: make sure to disable the condition options form before running the tests. Do this by setting HomeController::CONDITION_OPTIONS_READONLY to true.</div>
   </p>
   <div class="field">
     <%= label_tag('apply_method') %><br />

@@ -1,6 +1,6 @@
 <h1><%= params[:controller].humanize %> - <%= params[:action].humanize %> - <%= params[:method].humanize %></h1>
 
-<%= form_tag create_test_class_create_path(params[:method]) do %>
+<%= form_tag(create_test_class_create_path(params[:method])) do %>
   <% if ['create_array', 'create!_array'].include?(params[:method]) %>
     <% @all_types_object.each_with_index do |all_types_object, i| %>
       <h2>Fields for object <%= (i + 1) %></h2>

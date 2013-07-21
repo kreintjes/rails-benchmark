@@ -1,5 +1,60 @@
 class UpdateTestController < ApplicationController
-  before_filter :only => [:object_single_update, :object_multi_update, :class_update_update, :class_update_all_update] { @show_last_queries = true }
+  before_filter :only => [:relation_update, :object_single_update, :object_multi_update] { @show_last_queries = true }
+
+  # We want a form to edit multiple attributes of an object/multiple objects through a relation method.
+  def relation_edit
+    case params[:method]
+    when "update"
+      @partial = (params[:option] == "single" ? "shared/id_select" : "shared/id_multi_select")
+    when "update_all"
+      @partial = nil
+    end
+  end
+
+  # We want to update multiple attributes of an object/multiple objects through a relation method.
+  def relation_update
+    # Build the relation depending on the various options (query methods).
+    relation = AllTypesObject.scoped
+    # Extract and apply query methods
+    relation = apply_query_methods(relation, params)
+
+    case params[:method]
+    when "update"
+      if params[:option] == "multi"
+        # Convert the attributes to an array of attributes (one for each of the objects we want to edit).
+        params[:updates] = Array.new(params[:id].size) { params[:updates] }
+      end
+      # Find and update the object(s) by its/their ID(s) through the relation update method.
+      @all_types_objects = [relation.update(params[:id], params[:updates])].flatten
+      # Retrieve the updated object(s) fresh from the database. This way the scanners can check if the response is as expected and if there might be an SQL injection.
+      reload_objects(@all_types_objects)
+    when "update_all"
+      # Determine the updates
+      case params[:option]
+      when "string"
+        # We want to represent the updates as a string. Rails considers the string to be safe, so we apply our own sanitization through Rails quote method.
+        updates = build_updates('string', params[:updates])
+      when "array"
+        # We want to represent the updates as an array. Rails applies the sanitization for us.
+        updates = build_updates('array', params[:updates])
+      when "hash"
+        # We want to represent the updates as a hash. Rails applies the sanitization for us.
+        updates = build_updates('hash', params[:updates])
+      else
+        raise "Unknown option '#{params[:option]}'"
+      end
+      raise "No updates given" if updates.nil?
+      # Find and update the objects through the relation update_all method.
+      relation.update_all(updates)
+      begin
+        @all_types_objects = relation.all
+      rescue
+         # The code above could insert an extra SQL injection. We try to capture this and show no objects as a fallback.
+        @all_types_objects = []
+      end
+    end
+    respond_with(@all_types_objects)
+  end
 
   # We want a form to edit a single attribute of an object through its instance methods.
   def object_single_edit
@@ -83,66 +138,5 @@ class UpdateTestController < ApplicationController
     # Retrieve the updated object fresh from the database. This way the scanners can check if the response is as expected and if there might be an SQL injection.
     reload_objects(@all_type_object)
     respond_with(@all_types_object)
-  end
-
-  # We want a form to edit multiple attributes of an object/multiple objects through the class method update.
-  def class_update_edit
-    @all_types_object = AllTypesObject.new
-    # Setting some data for the view.
-    @multi = (params[:option] == "multi")
-    @name = (@multi ? AllTypesObject.model_name.human.pluralize : AllTypesObject.model_name.human)
-  end
-
-  # We want to update multiple attributes of an object/multiple objects through the class method update.
-  def class_update_update
-    if params[:option] == "multi"
-      # Convert the attributes to an array of attributes (one for each of the objects we want to edit).
-      params[:all_types_object] = Array.new(params[:id].size) { params[:all_types_object] }
-    end
-    # Find and update the object(s) by its/their ID(s) through the class update method.
-    AllTypesObject.update(params[:id], params[:all_types_object])
-    # Retrieve the updated object(s) fresh from the database. This way the scanners can check if the response is as expected and if there might be an SQL injection.
-    @all_types_object = AllTypesObject.find(params[:id])
-    respond_with(@all_types_object)
-  end
-
-  # We want a form to edit multiple attributes of objects through the class method update_all.
-  def class_update_all_edit
-    @all_types_object = AllTypesObject.new
-  end
-
-  # We want to update multiple attributes of objects through the class method update_all.
-  def class_update_all_update
-    # Determine the updates.
-    case params[:option]
-    when "string"
-      # We want to represent the updates as a string. Rails considers the string to be safe, so we apply our own sanitization through Rails quote method.
-      # XXX TODO This is a bit of an artificial use of this method. Should we even include this test or just stick with the safe array and hash methods (and test the quote method in some other way)?
-      updates = params[:all_types_object].reject { |k, v| v.blank? }.map { |k, v| "#{k} = #{AllTypesObject.connection.quote(v)}" }.join(",")
-    when "array"
-      # We want to represent the updates as an array. Rails applies the sanitization for us.
-      updates = params[:all_types_object].reject { |k, v| v.blank? }.map { |k, v| ["#{k} = ?", v] }.flatten
-    when "hash"
-      # We want to represent the updates as a hash. Rails applies the sanitization for us.
-      updates = params[:all_types_object].reject { |k, v| v.blank? }
-    else
-      raise "Unknown option '#{params[:option]}'"
-    end
-    # Determine the conditions.
-    conditions = nil # XXX TODO are we going to support this option? It is basically a where call, so we will consider it anyway with the Read tests.
-    # Determine the options (limit and order).
-    options = {}
-    options[:limit] = params[:limit] if params[:limit].present?
-    options[:order] = params[:order] if params[:order].present?
-    # Perform the update_all
-    AllTypesObject.update_all(updates, conditions, options)
-    # Retrieve the updated objects fresh from the database. This way the scanners can check if the response is as expected and if there might be an SQL injection.
-    begin
-      @all_types_objects = AllTypesObject.where(conditions).apply_finder_options(options)
-    rescue
-       # The code above could insert an extra SQL injection. We try to capture this and show all (with a maximum of 100 records to prevent timeouts) objects as a fallback.
-      @all_types_objects = AllTypesObject.order(:id).limit(100).all
-    end
-    respond_with(@all_types_objects)
   end
 end

@@ -17,14 +17,12 @@ Sqli::Application.routes.draw do
   match "read_test/class_by_sql_perform/:method(/:option)", :controller => 'read_test', :action => 'class_by_sql_perform', :via => 'post', :as => 'read_test_class_by_sql_perform'
 
   # Update tests
+  match "update_test/relation_edit/:method(/:option)", :controller => 'update_test', :action => 'relation_edit', :via => 'get', :as => 'update_test_relation_edit'
+  match "update_test/relation_update/:method(/:option)", :controller => 'update_test', :action => 'relation_update', :via => 'put', :as => 'update_test_relation_update'
   match "update_test/object_single_edit/:id/:method", :controller => 'update_test', :action => 'object_single_edit', :via => 'get', :as => 'update_test_object_single_edit'
   match "update_test/object_single_update/:id/:method", :controller => 'update_test', :action => 'object_single_update', :via => 'put', :as => 'update_test_object_single_update'
   match "update_test/object_multi_edit/:id/:method", :controller => 'update_test', :action => 'object_multi_edit', :via => 'get', :as => 'update_test_object_multi_edit'
   match "update_test/object_multi_update/:id/:method", :controller => 'update_test', :action => 'object_multi_update', :via => 'put', :as => 'update_test_object_multi_update'
-  match "update_test/class_update_edit/:option", :controller => 'update_test', :action => 'class_update_edit', :via => 'get', :as => 'update_test_class_update_edit'
-  match "update_test/class_update_update/:option", :controller => 'update_test', :action => 'class_update_update', :via => 'put', :as => 'update_test_class_update_update'
-  match "update_test/class_update_all_edit/:option", :controller => 'update_test', :action => 'class_update_all_edit', :via => 'get', :as => 'update_test_class_update_all_edit'
-  match "update_test/class_update_all_update/:option", :controller => 'update_test', :action => 'class_update_all_update', :via => 'put', :as => 'update_test_class_update_all_update'
 
   # Delete tests
   match "delete_test/class_delete_form/:option", :controller => 'delete_test', :action => 'class_delete_form', :via => 'get', :as => 'delete_test_class_delete_form'

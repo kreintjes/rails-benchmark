@@ -1,61 +1,55 @@
-<h2>Simple options</h2>
-<h3 class="toggleable-link">Limit</h3>
+<h2>Finder options</h2>
+<h3>Simple options</h3>
+<h4 class="toggleable-link"><%= label_tag(:limit) %></h4>
 <div class="field toggleable closed">
-  <%= label_tag(:limit) %><br />
   <%= text_field_tag(:limit) %>
 </div>
 
-<h3 class="toggleable-link">Offset</h3>
+<h4 class="toggleable-link"><%= label_tag(:offset) %></h4>
 <div class="field toggleable closed">
-  <%= label_tag(:offset) %><br />
   <%= text_field_tag(:offset) %>
 </div>
 
-<h3 class="toggleable-link">Unique</h3>
+<h4 class="toggleable-link"><%= label_tag(:uniq) %></h4>
 <div class="field toggleable closed">
-  <%= label_tag(:uniq) %><br />
   <%= text_field_tag(:uniq) %>
 </div>
 
-<h2>Conditions</h2>
-<h3 class="toggleable-link">Where</h3>
+<h3>Conditions</h3>
+<h4 class="toggleable-link">Where</h4>
 <div class="fields toggleable closed">
   <%= fields_for "where", AllTypesObject.new do |f| %>
     <%= render 'all_types_objects/fields', :f => f, :for_conditions => true %>
   <% end %>
 </div>
 
-<h3 class="toggleable-link">Having</h3>
+<h4 class="toggleable-link">Having</h4>
 <div class="fields toggleable closed">
   <%= fields_for "having", AllTypesObject.new do |f| %>
     <%= render 'all_types_objects/fields', :f => f, :for_conditions => true %>
   <% end %>
 </div>
 
-<h2>Associations</h2>
-<h3 class="toggleable-link">Eager_load</h3>
+<h3>Associations</h3>
+<h4 class="toggleable-link"><%= label_tag(:eager_load) %></h4>
 <div class="field toggleable closed">
-  <%= label_tag(:eager_load) %><br />
   <%= select_tag(:eager_load, options_for_select(ReadTestController::ASSOCIATIONS), :multiple => true) %>
 </div>
-<h3 class="toggleable-link">Includes</h3>
+<h4 class="toggleable-link"><%= label_tag(:includes) %></h4>
 <div class="field toggleable closed">
-  <%= label_tag(:includes) %><br />
   <%= select_tag(:includes, options_for_select(ReadTestController::ASSOCIATIONS), :multiple => true) %>
 </div>
-<h3 class="toggleable-link">Joins</h3>
+<h4 class="toggleable-link"><%= label_tag(:joins) %></h4>
 <div class="field toggleable closed">
-  <%= label_tag(:joins) %><br />
   <%= select_tag(:joins, options_for_select(ReadTestController::ASSOCIATIONS), :multiple => true) %>
 </div>
-<h3 class="toggleable-link">Preload</h3>
+<h4 class="toggleable-link"><%= label_tag(:preload) %></h4>
 <div class="field toggleable closed">
-  <%= label_tag(:preload) %><br />
   <%= select_tag(:preload, options_for_select(ReadTestController::ASSOCIATIONS), :multiple => true) %>
 </div>
 
-<h2>Others</h2>
-<h3 class="toggleable-link">Create_with</h3>
+<h3>Others</h3>
+<h4 class="toggleable-link">Create_with</h4>
 <div class="fields toggleable closed">
   <%= fields_for "create_with", AllTypesObject.new do |f| %>
     <%= render 'all_types_objects/fields', :f => f %>

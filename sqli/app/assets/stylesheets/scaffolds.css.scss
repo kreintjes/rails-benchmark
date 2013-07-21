@@ -76,3 +76,8 @@ label {
   display: inline-block;
   font-weight: bold;
 }
+
+.toggleable-link, .toggleable-link label {
+  cursor: pointer;
+  text-decoration: underline;
+}
