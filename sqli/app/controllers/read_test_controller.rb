@@ -1,12 +1,12 @@
 class ReadTestController < ApplicationController
-  before_filter :only => [:class_objects_perform, :class_value_perform, :class_by_sql_perform] { @show_last_queries = true }
+  before_filter :only => [:relation_objects_perform, :relation_value_perform, :relation_by_sql_perform] { @show_last_queries = true }
 
   FIND_SUB_METHODS = ['all', 'first', 'last']
   CALCULATE_SUB_METHODS = ['average', 'count', 'minimum', 'maximum', 'sum']
   ASSOCIATIONS = ['belongs_to', 'has_one', 'has_many', 'has_and_belongs_to_many']
 
-  # We want a form to read multiple objects through a class method.
-  def class_objects_form
+  # We want a form to read multiple objects through a relation method.
+  def relation_objects_form
     case params[:method]
     when "first", "last"
       @partial = "amount"
@@ -21,8 +21,8 @@ class ReadTestController < ApplicationController
     end
   end
 
-  # We want to read multiple objects through a class method.
-  def class_objects_perform
+  # We want to read multiple objects through a relation method.
+  def relation_objects_perform
     # Build the relation depending on the various options (query methods).
     relation = AllTypesObject.scoped
     # Extract and apply query methods
@@ -72,8 +72,8 @@ class ReadTestController < ApplicationController
     respond_with(@all_types_objects)
   end
 
-  # We want a form to determine some value from a database table through a class method.
-  def class_value_form
+  # We want a form to determine some value from a database table through a relation method.
+  def relation_value_form
     case params[:method]
     when "exists?"
       @partial = parse_option
@@ -85,8 +85,8 @@ class ReadTestController < ApplicationController
     end
   end
 
-  # We want to determine some value from a database table through a class method.
-  def class_value_perform
+  # We want to determine some value from a database table through a relation method.
+  def relation_value_perform
     # Build the relation depending on the various options (query methods).
     relation = AllTypesObject.scoped
     # Extract and apply query methods
@@ -118,13 +118,13 @@ class ReadTestController < ApplicationController
     respond_with(@result)
   end
 
-  # We want a form to read through the class ..._by_sql methods.
-  def class_by_sql_form
+  # We want a form to read through the relation ..._by_sql methods.
+  def relation_by_sql_form
     # Nothing to do here
   end
 
-  # We want to read through the class ..._by_sql methods.
-  def class_by_sql_perform
+  # We want to read through the relation ..._by_sql methods.
+  def relation_by_sql_perform
     # Determine the base query
     case params[:method]
     when "find_by_sql"

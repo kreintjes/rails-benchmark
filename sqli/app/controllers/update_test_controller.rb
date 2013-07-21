@@ -62,10 +62,10 @@ class UpdateTestController < ApplicationController
     # Find the object we want to edit (by its ID).
     @all_types_object = AllTypesObject.find(params[:id])
     case params[:method]
-    when "increment", "decrement"
+    when "increment!", "decrement!"
       # Render the by field.
       @partial = "by"
-    when "toggle", "touch"
+    when "toggle!", "touch"
       # Do not render extra fields.
       @partial = nil
     else
@@ -109,7 +109,7 @@ class UpdateTestController < ApplicationController
       raise "Unknown method '#{params[:method]}'"
     end
     # Retrieve the updated object fresh from the database. This way the scanners can check if the response is as expected and if there might be an SQL injection.
-    reload_objects(@all_type_object)
+    reload_objects(@all_types_object)
     respond_with(@all_types_object)
   end
 
@@ -137,7 +137,7 @@ class UpdateTestController < ApplicationController
       raise "Unknown method '#{params[:method]}'"
     end
     # Retrieve the updated object fresh from the database. This way the scanners can check if the response is as expected and if there might be an SQL injection.
-    reload_objects(@all_type_object)
+    reload_objects(@all_types_object)
     respond_with(@all_types_object)
   end
 end

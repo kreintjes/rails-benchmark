@@ -1,7 +1,7 @@
 <h1><%= params[:controller].humanize %> - <%= params[:action].humanize %> - <%= params[:method].humanize %></h1>
 
-<%= form_tag(read_test_class_by_sql_perform_path(params[:method], params[:option])) do %>
-  <%= render 'conditions'%>
+<%= form_tag(read_test_relation_by_sql_perform_path(params[:method], params[:option])) do %>
+  <%= render 'shared/conditions'%>
   <div class="actions">
     <%= submit_tag("Submit") %>
   </div>
