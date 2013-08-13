@@ -75,6 +75,7 @@ class ApplicationController < ActionController::Base
     relation = relation.preload(*params[:preload]) if params[:preload].present? # We only test the list argument type were we supply a list of strings. This is equivalent to calling the method with a single, list or array of strings/symbols.
 
     # Others
+    params[:create_with] = params[:create_with].reject { |k,v| v.blank? } # Remove blank values, so create_with will not be unnecessary set.
     relation = relation.create_with(params[:create_with]) if params[:create_with].present?
 
     relation

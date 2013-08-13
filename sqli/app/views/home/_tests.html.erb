@@ -15,6 +15,14 @@
             <li><%= link_to 'Save!', create_test_class_new_path('save!') %></li>
         </ul>
       </li>
+      <li>Relation methods:
+        <ul>
+            <li><%= link_to 'Create', create_test_relation_new_path('create') %></li>
+            <li><%= link_to 'Create!', create_test_relation_new_path('create!') %></li>
+            <li>Create array: <%= link_to_amounts 'create_test_relation_new_path', 'create_array' %></li>
+            <li>Create! array: <%= link_to_amounts 'create_test_relation_new_path', 'create!_array' %></li>
+        </ul>
+      </li>
     </ul>
   </li>
   <li>Read tests

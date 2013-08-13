@@ -7,6 +7,8 @@ Sqli::Application.routes.draw do
   # Create tests
   match "create_test/class_new/:method(/:amount)", :controller => 'create_test', :action => 'class_new', :via => 'get', :as => 'create_test_class_new'
   match "create_test/class_create/:method(/:amount)", :controller => 'create_test', :action => 'class_create', :via => 'post', :as => 'create_test_class_create'
+  match "create_test/relation_new/:method(/:amount)", :controller => 'create_test', :action => 'relation_new', :via => 'get', :as => 'create_test_relation_new'
+  match "create_test/relation_create/:method(/:amount)", :controller => 'create_test', :action => 'relation_create', :via => 'post', :as => 'create_test_relation_create'
 
   # Read tests
   match "read_test/relation_objects_form/:method(/:option)", :controller => 'read_test', :action => 'relation_objects_form', :via => 'get', :as => 'read_test_relation_objects_form'
