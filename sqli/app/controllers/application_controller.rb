@@ -6,6 +6,12 @@ class ApplicationController < ActionController::Base
   before_filter :reset_query_log # Clear last queries.
 
   CONDITION_OPTIONS_FILE = 'public/condition_options.set'
+  RUN_MODE = true
+
+  CREATE_TESTS_ENABLED = true
+  READ_TESTS_ENABLED = false
+  UPDATE_TESTS_ENABLED = false
+  DELETE_TESTS_ENABLED = false
 
   def reset_query_log
     ActiveRecord::Base.connection.last_queries = []
@@ -44,20 +50,20 @@ class ApplicationController < ActionController::Base
   end
 
   # Extract query methods (finder options) from params and apply them to the relation.
-  def apply_query_methods(relation, params)
+  def apply_query_methods(relation, params, only = nil)
     # Simple options
     # Add the limit option (numeric value).
-    relation = relation.limit(params[:limit]) if params[:limit].present?
+    relation = relation.limit(params[:limit]) if (only.nil? || only.include?(:limit)) && params[:limit].present?
     # Add the offset option (numeric value).
-    relation = relation.offset(params[:offset]) if params[:offset].present?
+    relation = relation.offset(params[:offset]) if (only.nil? || only.include?(:offset)) && params[:offset].present?
     # Add the unique option (boolean value).
-    relation = relation.uniq(params[:uniq]) if params[:uniq].present?
+    relation = relation.uniq(params[:uniq]) if (only.nil? || only.include?(:uniq)) && params[:uniq].present?
 
     # Conditions
     # Build and apply the where conditions.
-    relation = build_and_apply_conditions(relation, :where, params[:where]) if params[:where].present?
+    relation = build_and_apply_conditions(relation, :where, params[:where]) if (only.nil? || only.include?(:where)) && params[:where].present?
     # Build and apply the having conditions.
-    if params[:having].present?
+    if (only.nil? || only.include?(:having)) && params[:having].present?
       relation = build_and_apply_conditions(relation, :having, params[:having])
       # relation the database columns used in the having clause to the group clause or else an exception will occur.
       having_columns = params[:having].select { |column, value| value.present? }.keys
@@ -66,17 +72,17 @@ class ApplicationController < ActionController::Base
 
     # Associations
     # Add the eager_load option (string value).
-    relation = relation.eager_load(*params[:eager_load]) if params[:eager_load].present? # We only test the list argument type were we supply a list of strings. This is equivalent to calling the method with a single, list or array of strings/symbols.
+    relation = relation.eager_load(*params[:eager_load]) if (only.nil? || only.include?(:eager_load)) && params[:eager_load].present? # We only test the list argument type were we supply a list of strings. This is equivalent to calling the method with a single, list or array of strings/symbols.
     # Add the includes option (string value).
-    relation = relation.includes(*params[:includes]) if params[:includes].present? # We only test the list argument type were we supply a list of strings. This is equivalent to calling the method with a single, list or array of strings/symbols.
+    relation = relation.includes(*params[:includes]) if (only.nil? || only.include?(:includes)) && params[:includes].present? # We only test the list argument type were we supply a list of strings. This is equivalent to calling the method with a single, list or array of strings/symbols.
     # Add the joins option (string value).
-    relation = relation.joins(*params[:joins].map(&:to_sym)) if params[:joins].present? # We only test the list argument type were we supply a list of symbols (since supplying strings is not safe). This is equivalent to calling the method with a single, list or array of symbols.
+    relation = relation.joins(*params[:joins].map(&:to_sym)) if (only.nil? || only.include?(:joins)) && params[:joins].present? # We only test the list argument type were we supply a list of symbols (since supplying strings is not safe). This is equivalent to calling the method with a single, list or array of symbols.
     # Add the preload option (string value).
-    relation = relation.preload(*params[:preload]) if params[:preload].present? # We only test the list argument type were we supply a list of strings. This is equivalent to calling the method with a single, list or array of strings/symbols.
+    relation = relation.preload(*params[:preload]) if (only.nil? || only.include?(:preload)) && params[:preload].present? # We only test the list argument type were we supply a list of strings. This is equivalent to calling the method with a single, list or array of strings/symbols.
 
     # Others
     params[:create_with] = params[:create_with].reject { |k,v| v.blank? } # Remove blank values, so create_with will not be unnecessary set.
-    relation = relation.create_with(params[:create_with]) if params[:create_with].present?
+    relation = relation.create_with(params[:create_with]) if (only.nil? || only.include?(:create_with)) && params[:create_with].present?
 
     relation
   end

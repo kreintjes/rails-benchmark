@@ -44,14 +44,14 @@ class CreateTestController < ApplicationController
   def relation_create
     # Build the relation depending on the various options (query methods).
     relation = AllTypesObject.scoped
-    # Extract and apply query methods (although for create queries, almost all values are ignored)
-    relation = apply_query_methods(relation, params)
+    # Extract and apply query methods (for the create tests only the create_with option is relevant)
+    relation = apply_query_methods(relation, params, [:create_with])
 
     # Perform the insertion
     case params[:method]
     when "create_array", "create!_array"
       # Create and directly insert the new objects into the database.
-      params[:all_types_object] = params[:all_types_object].map { |h| h.reject { |k,v| v.blank? } } # Remove all empty values, so the create_with values are not overwritten.
+      params[:all_types_object] = params[:all_types_object].map { |h| h.reject { |k,v| v.blank? } } if params[:all_types_object].present? # Remove all empty values, so the create_with values are not overwritten.
       @all_types_object = relation.send(params[:method].split('_')[0], params[:all_types_object].presence || [])
     when "create", "create!"
       # Create and directly insert the new object into the database.

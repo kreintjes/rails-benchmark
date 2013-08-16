@@ -2,7 +2,12 @@
 
 <%= form_tag(create_test_relation_create_path(params[:method], params[:amount])) do %>
   <%= render "attributes" %>
-  <%= render 'shared/query_methods_fields' %>
+  <h2>Create_with</h2>
+  <div>
+    <%= fields_for "create_with", AllTypesObject.new do |f| %>
+      <%= render 'all_types_objects/fields', :f => f %>
+    <% end %>
+  </div>
   <div class="actions">
     <%= submit_tag "Submit" %>
   </div>

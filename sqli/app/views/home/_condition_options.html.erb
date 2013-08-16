@@ -1,8 +1,8 @@
 <h2>Condition options</h2>
-<% if HomeController::CONDITION_OPTIONS_READONLY %>
+<% if ApplicationController::RUN_MODE %>
   <p>
     The condition options as currently set.<br />
-    Set HomeController::CONDITION_OPTIONS_READONLY to false to change them.
+    Set ApplicationController::RUN_MODE to false to change them.
   </p>
   <div>Apply method: <strong><%= @condition_options[:apply_method] %></strong></div>
   <div>Argument type: <strong><%= @condition_options[:argument_type] %></strong></div>
@@ -15,7 +15,7 @@
     Conditions (mostly applied using the where or having method) can be set in various ways.<br />
     The options below control these ways.<br />
     These settings are global. They will be used for all methods using conditions.<br />
-    <div style="font-weight: bold; text-decoration: underline;">Note: make sure to disable the condition options form before running the tests. Do this by setting HomeController::CONDITION_OPTIONS_READONLY to true.</div>
+    <div style="font-weight: bold; text-decoration: underline;">Note: make sure to disable the condition options form before running the tests. Do this by setting ApplicationController::RUN_MODE to true.</div>
   </p>
   <div class="field">
     <%= label_tag('apply_method') %><br />

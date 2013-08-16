@@ -3,7 +3,6 @@ class HomeController < ApplicationController
   CONDITIONS_ARGUMENT_TYPES = ["string", "list", "array", "hash"]
   CONDITIONS_PLACEHOLDER_STYLES = ["question_mark", "named", "sprintf"]
   CONDITIONS_HASH_STYLES = ["equality", "range", "subset"]
-  CONDITION_OPTIONS_READONLY = false
 
   def index
     @objects = AllTypesObject.order(:id).all

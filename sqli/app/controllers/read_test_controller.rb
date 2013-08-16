@@ -25,7 +25,7 @@ class ReadTestController < ApplicationController
   def relation_objects_perform
     # Build the relation depending on the various options (query methods).
     relation = AllTypesObject.scoped
-    # Extract and apply query methods
+    # Extract and apply query methods.
     relation = apply_query_methods(relation, params)
 
     # Perform the query

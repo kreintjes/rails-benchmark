@@ -35,7 +35,7 @@ filled = {
     :timestamp_col => Time.new.utc
 }
 
-amount = 1
+amount = 0
 amount.times do
   # Normal objects
   AllTypesObject.create
