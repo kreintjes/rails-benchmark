@@ -29,5 +29,5 @@ Sqli::Application.routes.draw do
   # Delete tests
   match "delete_test/relation_form/:method/:option", :controller => 'delete_test', :action => 'relation_form', :via => 'get', :as => 'delete_test_relation_form'
   match "delete_test/relation_perform/:method/:option", :controller => 'delete_test', :action => 'relation_perform', :via => 'post', :as => 'delete_test_relation_perform'
-  #match "delete_test/object_remove/:id/:method", :controller => 'delete_test', :action => 'object_remove', :via => 'get', :as => 'delete_test_object_remove'
+  match "delete_test/object_remove/:id/:method", :controller => 'delete_test', :action => 'object_remove', :via => 'get', :as => 'delete_test_object_remove'
 end

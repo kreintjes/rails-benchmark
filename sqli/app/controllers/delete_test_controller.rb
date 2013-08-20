@@ -1,5 +1,6 @@
 class DeleteTestController < ApplicationController
   before_filter :only => [:relation_perform, :object_remove] { @show_last_queries = true }
+  after_filter :reset_database, if: "AllTypesObject.count < 10" # Reset the database if there are no objects present anymore.
 
   # We want a form to delete an object/multiple objects through a relation method.
   def relation_form
@@ -39,7 +40,6 @@ class DeleteTestController < ApplicationController
       else
         raise "Unknown option '#{params[:option]}'"
       end
-      puts conditions.inspect
       # Find and update the objects through the relation update_all method.
       amount = relation.send(params[:method], *conditions)
       amount = amount.size if params[:method] == "destroy_all"

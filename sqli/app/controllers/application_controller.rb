@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
   before_filter :reset_query_log # Clear last queries.
 
   CONDITION_OPTIONS_FILE = 'public/condition_options.set'
-  RUN_MODE = true
+  RUN_MODE = false
 
   CREATE_TESTS_ENABLED = true
   READ_TESTS_ENABLED = true
@@ -20,6 +20,14 @@ class ApplicationController < ActionController::Base
   def log_query(sql, name)
     ActiveRecord::Base.connection.last_queries << [sql, name]
   end
+
+  def reset_database
+    # Clears and reinitializes the database
+    flash[:notice] = "Database reset performed" unless RUN_MODE
+    ActiveRecord::Base.connection.execute('TRUNCATE TABLE "all_types_objects" RESTART IDENTITY')
+    ActiveRecord::Base.connection.execute('TRUNCATE TABLE "association_objects" RESTART IDENTITY')
+    Rails.application.load_seed
+    end
 
   # The apply method (separated/joined) determines whether the conditions should be applied seperately (using multiple where/having method calls) or joined in a large statement (using a single where/having method call).
   # The argument type (string/list/array/hash) determines whether the arguments should be applied as a string (one large statement string with values filled in), a list (statement string followed by a list with bind variables), an array (with a statement string and bind variables) or an hash.
