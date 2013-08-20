@@ -1,13 +1,13 @@
 <h2>Attributes</h2>
-<% if ['create_array', 'create!_array'].include?(params[:method]) %>
+<% if @all_types_object.respond_to?(:each_with_index) %>
   <% @all_types_object.each_with_index do |all_types_object, i| %>
     <h3>Object <%= (i + 1) %></h3>
-    <%= fields_for "all_types_object[]", all_types_object do |f| %>
+    <%= fields_for "attributes[]", all_types_object do |f| %>
       <%= render 'all_types_objects/fields', :f => f %>
     <% end %>
   <% end %>
 <% else %>
-  <%= fields_for "all_types_object", @all_types_object do |f| %>
+  <%= fields_for "attributes", @all_types_object do |f| %>
     <%= render 'all_types_objects/fields', :f => f %>
   <% end %>
 <% end %>

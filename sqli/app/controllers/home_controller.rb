@@ -5,7 +5,7 @@ class HomeController < ApplicationController
   CONDITIONS_HASH_STYLES = ["equality", "range", "subset"]
 
   def index
-    @objects = AllTypesObject.order(:id).all
+    @objects = AllTypesObject.order(:id).limit(10).all
     @amounts = 1..3
   end
 

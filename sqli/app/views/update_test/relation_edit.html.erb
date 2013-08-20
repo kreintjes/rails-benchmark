@@ -1,6 +1,6 @@
 <h1><%= params[:controller].humanize %> - <%= params[:action].humanize %> - <%= params[:method].humanize %></h1>
 
-<%= form_tag(update_test_relation_update_path(params[:method], params[:option]), :method => "put") do |f| %>
+<%= form_tag(update_test_relation_update_path(params[:method], params[:option])) do |f| %>
   <%= render @partial if @partial.present? %>
   <h2>Updates</h2>
   <%= fields_for "updates", AllTypesObject.new do |f| %>

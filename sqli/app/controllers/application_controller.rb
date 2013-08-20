@@ -9,9 +9,9 @@ class ApplicationController < ActionController::Base
   RUN_MODE = true
 
   CREATE_TESTS_ENABLED = true
-  READ_TESTS_ENABLED = false
-  UPDATE_TESTS_ENABLED = false
-  DELETE_TESTS_ENABLED = false
+  READ_TESTS_ENABLED = true
+  UPDATE_TESTS_ENABLED = true
+  DELETE_TESTS_ENABLED = true
 
   def reset_query_log
     ActiveRecord::Base.connection.last_queries = []

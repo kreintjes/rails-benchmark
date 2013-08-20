@@ -78,18 +78,21 @@ class UpdateTestController < ApplicationController
   def object_single_update
     # Find the object we want to update by its ID.
     @all_types_object = AllTypesObject.find(params[:id])
+    # Check if the attribute is allowed (the attribute parameter for the methods below is considered safe by Rails and thus this parameter should be checked against a whitelist)
+    return redirect_to update_test_object_single_edit_path(@all_types_object, params[:method]), :alert => "Selected attribute is not a valid attribute of AllTypesObject!" unless @all_types_object.attribute_names.include?(params[:attribute])
+
     case params[:method]
     when "increment!", "decrement!"
       # Increment the object's attribute :attribute by :by with Rails increment! method.
       begin
         # First try it with the raw data (which will be a string).
-        @all_types_object.send("#{params[:method]}!", params[:attribute], params[:by])
+        @all_types_object.send("#{params[:method]}", params[:attribute], params[:by])
       rescue TypeError=>e
         # This likely fails, since increment/decrement expects by to be an integer or nil. Try again with a typecast.
         if(params[:by].present?)
-          @all_types_object.send("#{params[:method]}!", params[:attribute], params[:by].to_i)
+          @all_types_object.send("#{params[:method]}", params[:attribute], params[:by].to_i)
         else
-          @all_types_object.send("#{params[:method]}!", params[:attribute])
+          @all_types_object.send("#{params[:method]}", params[:attribute])
         end
       end
     when "toggle!"
@@ -126,13 +129,13 @@ class UpdateTestController < ApplicationController
     case params[:method]
     when "save", "save!"
       # Update the attributes by using their setters and saving the object.
-      params[:all_types_object].each do |attribute, value|
+      params[:attributes].each do |attribute, value|
         @all_types_object.send("#{attribute}=", value)
       end
       @all_types_object.send(params[:method])
     when "update_attributes", "update_attributes!"
       # Update the attributes for the object with Rails basic update_attributes method.
-      @all_types_object.send(params[:method], params[:all_types_object])
+      @all_types_object.send(params[:method], params[:attributes])
     else
       raise "Unknown method '#{params[:method]}'"
     end

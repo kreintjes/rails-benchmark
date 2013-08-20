@@ -15,7 +15,8 @@ class ReadTestController < ApplicationController
     when "find_each", "find_in_batches"
       @partial = "batches"
     when "first_or_initialize", "first_or_create", "first_or_create!"
-      @partial = "attributes"
+      @all_types_object = AllTypesObject.new
+      @partial = "shared/attributes"
     when "find"
       @partial = parse_option
     end

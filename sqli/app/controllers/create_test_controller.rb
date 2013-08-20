@@ -14,16 +14,16 @@ class CreateTestController < ApplicationController
     when "save", "save!"
       # Make new object, set attributes and save it.
       @all_types_object = AllTypesObject.new
-      params[:all_types_object].each do |attribute, value|
+      params[:attributes].each do |attribute, value|
         @all_types_object.send("#{attribute}=", value)
       end
       @all_types_object.send(params[:method])
     when "create_array", "create!_array"
       # Create and directly insert the new objects into the database.
-      @all_types_object = AllTypesObject.send(params[:method].split('_')[0], params[:all_types_object].presence || [])
+      @all_types_object = AllTypesObject.send(params[:method].split('_')[0], params[:attributes].presence || [])
     when "create", "create!"
       # Create and directly insert the new object into the database.
-      @all_types_object = AllTypesObject.send(params[:method], params[:all_types_object])
+      @all_types_object = AllTypesObject.send(params[:method], params[:attributes])
     else
       raise "Unknown method '#{params[:method]}'"
     end
@@ -51,12 +51,12 @@ class CreateTestController < ApplicationController
     case params[:method]
     when "create_array", "create!_array"
       # Create and directly insert the new objects into the database.
-      params[:all_types_object] = params[:all_types_object].map { |h| h.reject { |k,v| v.blank? } } if params[:all_types_object].present? # Remove all empty values, so the create_with values are not overwritten.
-      @all_types_object = relation.send(params[:method].split('_')[0], params[:all_types_object].presence || [])
+      params[:attributes] = params[:attributes].map { |h| h.reject { |k,v| v.blank? } } if params[:attributes].present? # Remove all empty values, so the create_with values are not overwritten.
+      @all_types_object = relation.send(params[:method].split('_')[0], params[:attributes].presence || [])
     when "create", "create!"
       # Create and directly insert the new object into the database.
-      params[:all_types_object] = params[:all_types_object].reject { |k,v| v.blank? } # Remove all empty values, so the create_with values are not overwritten.
-      @all_types_object = relation.send(params[:method], params[:all_types_object])
+      params[:attributes] = params[:attributes].reject { |k,v| v.blank? } # Remove all empty values, so the create_with values are not overwritten.
+      @all_types_object = relation.send(params[:method], params[:attributes])
     else
       raise "Unknown method '#{params[:method]}'"
     end
