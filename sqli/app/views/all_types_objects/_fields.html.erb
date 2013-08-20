@@ -44,8 +44,8 @@
   <%= f.label :time_col %><br />
   <%= f.text_field :time_col %>
 </div>
-<% if defined?(for_conditions) && for_conditions %>
-<!-- Timestamp col in create values or updates gives false positives due to misformat of timestamp -->
+<% if false %>
+<!-- Timestamp col gives false positives due to misformat of timestamp -->
 <div class="field">
   <%= f.label :timestamp_col %><br />
   <%= f.text_field :timestamp_col %>
