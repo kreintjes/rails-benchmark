@@ -60,16 +60,16 @@
   </li>
   <li>Value relation methods:
     <ul>
-      <li><%= link_to 'Any?', read_test_relation_value_form_path('any?') %></li>
-      <li><%= link_to 'Empty?', read_test_relation_value_form_path('empty?') %></li>
-      <li><%= link_to 'Many?', read_test_relation_value_form_path('many?') %></li>
-      <li><%= link_to 'Size', read_test_relation_value_form_path('size') %></li>
+      <li><%= link_to 'Any?', read_test_relation_value_form_path('any-') %></li>
+      <li><%= link_to 'Empty?', read_test_relation_value_form_path('empty-') %></li>
+      <li><%= link_to 'Many?', read_test_relation_value_form_path('many-') %></li>
       <li>Exists?:
-        <%= link_to 'no arguments', read_test_relation_value_form_path('exists?') %>
-        <%= link_to 'id', read_test_relation_value_form_path('exists?', 'id') %>
-        <%= link_to 'conditions array', read_test_relation_value_form_path('exists?', 'conditions_array') %>
-        <%= link_to 'conditions hash', read_test_relation_value_form_path('exists?', 'conditions_hash') %>
+        <%= link_to 'no arguments', read_test_relation_value_form_path('exists-') %>
+        <%= link_to 'id', read_test_relation_value_form_path('exists-', 'id') %>
+        <%= link_to 'conditions array', read_test_relation_value_form_path('exists-', 'conditions_array') %>
+        <%= link_to 'conditions hash', read_test_relation_value_form_path('exists-', 'conditions_hash') %>
       </li>
+      <li><%= link_to 'Size', read_test_relation_value_form_path('size') %></li>
       <li><%= link_to 'Explain', read_test_relation_value_form_path('explain') %></li>
     </ul>
   </li>

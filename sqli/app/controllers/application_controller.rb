@@ -4,14 +4,15 @@ class ApplicationController < ActionController::Base
 
   before_filter :set_condition_options # Set the condition option modes.
   before_filter :reset_query_log # Clear last queries.
+  before_filter :parse_method
 
   CONDITION_OPTIONS_FILE = 'public/condition_options.set'
-  RUN_MODE = false
+  RUN_MODE = true
 
-  CREATE_TESTS_ENABLED = true
+  CREATE_TESTS_ENABLED = false
   READ_TESTS_ENABLED = true
-  UPDATE_TESTS_ENABLED = true
-  DELETE_TESTS_ENABLED = true
+  UPDATE_TESTS_ENABLED = false
+  DELETE_TESTS_ENABLED = false
 
   def reset_query_log
     ActiveRecord::Base.connection.last_queries = []
@@ -57,6 +58,11 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # In URLs we replace ? in the method with a -, so the scanners will not mess with it (because they think it is part of the GET query string).
+  def parse_method
+    params[:method].gsub!('-', '?') if params[:method].present?
+  end
+
   # Extract query methods (finder options) from params and apply them to the relation.
   def apply_query_methods(relation, params, only = nil)
     # Simple options
@@ -84,7 +90,7 @@ class ApplicationController < ActionController::Base
     # Add the includes option (string value).
     relation = relation.includes(*params[:includes]) if (only.nil? || only.include?(:includes)) && params[:includes].present? # We only test the list argument type were we supply a list of strings. This is equivalent to calling the method with a single, list or array of strings/symbols.
     # Add the joins option (string value).
-    relation = relation.joins(*params[:joins].map(&:to_sym)) if (only.nil? || only.include?(:joins)) && params[:joins].present? # We only test the list argument type were we supply a list of symbols (since supplying strings is not safe). This is equivalent to calling the method with a single, list or array of symbols.
+    relation = relation.joins(*params[:joins].map(&:to_sym)) if (only.nil? || only.include?(:joins)) && params[:joins].present? # We only test the list argument type were we supply a list of symbols (since strings are used as plain SQL and thus we know this is not safe). This is equivalent to calling the method with a single, list or array of symbols.
     # Add the preload option (string value).
     relation = relation.preload(*params[:preload]) if (only.nil? || only.include?(:preload)) && params[:preload].present? # We only test the list argument type were we supply a list of strings. This is equivalent to calling the method with a single, list or array of strings/symbols.
 
