@@ -10,7 +10,7 @@
   <p id="alert"><%= alert %></p>
   <p id="notice"><%= notice %></p>
 
-  <% if !ApplicationController::RUN_MODE && @show_last_queries && ActiveRecord::Base.connection.last_queries.present? %>
+  <% if !@running && @show_last_queries && ActiveRecord::Base.connection.last_queries.present? %>
   <p><strong><underline>Last queries:</underline></strong><br />
     <% ActiveRecord::Base.connection.last_queries.each_with_index do |last_query, i| %>
     <div><%= i + 1 %>. <%= last_query[1].present? ? "<strong>#{last_query[1]} </strong>".html_safe : nil %><%= last_query[0] %></div>

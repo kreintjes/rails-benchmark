@@ -2,17 +2,27 @@ class ApplicationController < ActionController::Base
   #protect_from_forgery # Disabled as a precaution (it could hinder the dynamic scanners)
   respond_to :html
 
+  before_filter :set_running
   before_filter :set_condition_options # Set the condition option modes.
   before_filter :reset_query_log # Clear last queries.
   before_filter :parse_method
 
   CONDITION_OPTIONS_FILE = 'public/condition_options.set'
-  RUN_MODE = true
+  RUN_MODE = nil # Let the system decide based on the environment
 
   CREATE_TESTS_ENABLED = false
   READ_TESTS_ENABLED = true
   UPDATE_TESTS_ENABLED = false
   DELETE_TESTS_ENABLED = false
+
+  def running?
+    return RUN_MODE if RUN_MODE.present?
+    Rails.env.production?
+  end
+
+  def set_running
+    @running = self.running?
+  end
 
   def reset_query_log
     ActiveRecord::Base.connection.last_queries = []
@@ -24,7 +34,7 @@ class ApplicationController < ActionController::Base
 
   def reset_database
     # Clears and reinitializes the database
-    flash[:notice] = "Database reset performed" unless RUN_MODE
+    flash[:notice] = "Database reset performed" unless self.running?
     ActiveRecord::Base.connection.execute('TRUNCATE TABLE "all_types_objects" RESTART IDENTITY')
     ActiveRecord::Base.connection.execute('TRUNCATE TABLE "association_objects" RESTART IDENTITY')
     Rails.application.load_seed
