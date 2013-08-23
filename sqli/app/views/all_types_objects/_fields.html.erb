@@ -44,13 +44,10 @@
   <%= f.label :time_col %><br />
   <%= f.text_field :time_col %>
 </div>
-<% if true %>
-<!-- Timestamp col gives false positives due to misformat of timestamp -->
 <div class="field">
   <%= f.label :timestamp_col %><br />
   <%= f.text_field :timestamp_col %>
 </div>
-<% end %>
 <div class="field">
   <%= f.label :belongs_to_id %><br />
   <%= f.collection_select :belongs_to_id, AssociationObject.all, :id, :id, :include_blank => true %>

@@ -68,7 +68,7 @@ class ReadTestController < ApplicationController
     # Wrap the result(s) in array and flatten (since the template expects an array of results)
     @all_types_objects = [@results].flatten
 
-    @includes = relation.eager_load_values + relation.includes_values + relation.preload_values
+    @includes = (relation.eager_load_values + relation.includes_values + relation.preload_values).uniq
 
     respond_with(@all_types_objects)
   end
