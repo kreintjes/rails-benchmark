@@ -30,39 +30,45 @@ class ReadTestController < ApplicationController
     relation = apply_query_methods(relation, params)
 
     # Perform the query
-    case params[:method]
-    when "first", "last"
-      amount = params[:amount].to_i if params[:amount].present?
-      @results = relation.send(params[:method], *amount)
-    when "to_a", "all", "first!", "last!"
-      @results = relation.send(params[:method])
-    when "select"
-      @results = relation.send(params[:method]) { true } # Select with a block acts as a finder method. The block simply returns true to not futher limit the results.
-    when "find"
-      case params[:option]
-      when "sub_method"
-        raise "Unknown sub method '#{params[:sub_method]}'" unless FIND_SUB_METHODS.include?(params[:sub_method])
-        @results = relation.send(params[:method], params[:sub_method].to_sym)
-      when "single_id"
-        @results = relation.send(params[:method], params[:id])
-      when "id_list"
-        @results = relation.send(params[:method], *params[:id])
-      when "id_array"
-        @results = relation.send(params[:method], params[:id])
+    begin
+      case params[:method]
+      when "first", "last"
+        amount = params[:amount].to_i if params[:amount].present?
+        @results = relation.send(params[:method], *amount)
+      when "to_a", "all", "first!", "last!"
+        @results = relation.send(params[:method])
+      when "select"
+        @results = relation.send(params[:method]) { true } # Select with a block acts as a finder method. The block simply returns true to not futher limit the results.
+      when "find"
+        case params[:option]
+        when "sub_method"
+          raise "Unknown sub method '#{params[:sub_method]}'" unless FIND_SUB_METHODS.include?(params[:sub_method])
+          @results = relation.send(params[:method], params[:sub_method].to_sym)
+        when "single_id"
+          @results = relation.send(params[:method], params[:id])
+        when "id_list"
+          @results = relation.send(params[:method], *params[:id])
+        when "id_array"
+          @results = relation.send(params[:method], params[:id])
+        end
+      when "dynamic_find_by", "dynamic_find_by!"
+        method = "find_by_#{params[:attribute]}" + (params[:method] == "dynamic_find_by!" ? "!" : "")
+        @results = relation.send(method, params[:value])
+      when "find_each", "find_in_batches"
+        @results = []
+        options = {}
+        options[:start] = params[:start].to_i if params[:start].present?
+        options[:batch_size] = params[:batch_size].to_i if params[:batch_size].present?
+        relation.send(params[:method], options) { |results| @results << results }
+      when "first_or_initialize", "first_or_create", "first_or_create!"
+        @results = relation.send(params[:method], params[:attributes].presence)
+      else
+        raise "Unknown method '#{params[:method]}'"
       end
-    when "dynamic_find_by", "dynamic_find_by!"
-      method = "find_by_#{params[:attribute]}" + (params[:method] == "dynamic_find_by!" ? "!" : "")
-      @results = relation.send(method, params[:value])
-    when "find_each", "find_in_batches"
+    rescue ActiveRecord::RecordNotFound => e
+      # Prevent false positive due to exception that the object was not found (could occur for first!, last! and find method)
       @results = []
-      options = {}
-      options[:start] = params[:start].to_i if params[:start].present?
-      options[:batch_size] = params[:batch_size].to_i if params[:batch_size].present?
-      relation.send(params[:method], options) { |results| @results << results }
-    when "first_or_initialize", "first_or_create", "first_or_create!"
-      @results = relation.send(params[:method], params[:attributes].presence)
-    else
-      raise "Unknown method '#{params[:method]}'"
+      flash[:alert] = "Rescued ActiveRecord::RecordNotFound exception to prevent false positive"
     end
 
     # Wrap the result(s) in array and flatten (since the template expects an array of results)
@@ -109,6 +115,9 @@ class ReadTestController < ApplicationController
         @result = relation.send(params[:method])
       end
     when "average", "count", "maximum", "minimum", "sum", "calculate", "pluck"
+      # Check if the column_name is allowed (the column_name parameter for the method pluck is considered safe by Rails and thus this parameter should be checked against a whitelist)
+      return redirect_to read_test_relation_value_form_path(params[:method], params[:option]), :alert => "Selected column_name is not a valid attribute of AllTypesObject!" unless AllTypesObject.attribute_names.include?(params[:column_name])
+
       options = [{ :distinct => (params[:distinct] == "true") }] if params[:distinct].present? # Only count and calculate take distinct (and actually only calculate with sub_method=count used distinct)
       sub_method = [params[:sub_method].to_sym] if params[:method] == "calculate" # Only calculate takes a sub_method. For other methods sub method is ignored and not used as an argument.
       @result = relation.send(params[:method], *sub_method, params[:column_name].presence, *options)

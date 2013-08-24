@@ -78,6 +78,7 @@ class UpdateTestController < ApplicationController
   def object_single_update
     # Find the object we want to update by its ID.
     @all_types_object = AllTypesObject.find(params[:id])
+
     # Check if the attribute is allowed (the attribute parameter for the methods below is considered safe by Rails and thus this parameter should be checked against a whitelist)
     return redirect_to update_test_object_single_edit_path(@all_types_object, params[:method]), :alert => "Selected attribute is not a valid attribute of AllTypesObject!" unless @all_types_object.attribute_names.include?(params[:attribute])
 
