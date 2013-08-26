@@ -2,7 +2,6 @@ class ApplicationController < ActionController::Base
   #protect_from_forgery # Disabled as a precaution (it could hinder the dynamic scanners)
   respond_to :html
 
-  before_filter :set_running
   before_filter :set_condition_options # Set the condition option modes.
   before_filter :reset_query_log # Clear last queries.
   before_filter :parse_method
@@ -19,10 +18,7 @@ class ApplicationController < ActionController::Base
     return RUN_MODE if RUN_MODE.present?
     Rails.env.production?
   end
-
-  def set_running
-    @running = self.running?
-  end
+  helper_method :running?
 
   def reset_query_log
     ActiveRecord::Base.connection.last_queries = []

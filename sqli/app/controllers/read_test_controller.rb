@@ -68,7 +68,11 @@ class ReadTestController < ApplicationController
     rescue ActiveRecord::RecordNotFound => e
       # Prevent false positive due to exception that the object was not found (could occur for first!, last! and find method)
       @results = []
-      flash[:alert] = "Rescued ActiveRecord::RecordNotFound exception to prevent false positive"
+      if self.running?
+        logger.debug "Automatic handled ActiveRecord::RecordNotFound error to prevent false positive"
+      else
+        flash[:alert] = "Automatic handled ActiveRecord::RecordNotFound error to prevent false positive"
+      end
     end
 
     # Wrap the result(s) in array and flatten (since the template expects an array of results)
