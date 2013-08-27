@@ -76,7 +76,7 @@ class ReadTestController < ApplicationController
     end
 
     # Wrap the result(s) in array and flatten (since the template expects an array of results)
-    @all_types_objects = [@results].flatten
+    @all_types_objects = (@results.present? ? [@results].flatten : nil)
 
     @includes = (relation.eager_load_values + relation.includes_values + relation.preload_values).uniq
 
