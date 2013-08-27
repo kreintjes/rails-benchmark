@@ -5,7 +5,7 @@
   <h2>Create_with</h2>
   <div>
     <%= fields_for "create_with", AllTypesObject.new do |f| %>
-      <%= render 'all_types_objects/fields', :f => f %>
+      <%= render 'shared/fields', :f => f %>
     <% end %>
   </div>
   <div class="actions">

@@ -9,10 +9,10 @@ class ApplicationController < ActionController::Base
   CONDITION_OPTIONS_FILE = 'public/condition_options.set'
   RUN_MODE = nil # Let the system decide based on the environment
 
-  CREATE_TESTS_ENABLED = false
+  CREATE_TESTS_ENABLED = true
   READ_TESTS_ENABLED = true
-  UPDATE_TESTS_ENABLED = false
-  DELETE_TESTS_ENABLED = false
+  UPDATE_TESTS_ENABLED = true
+  DELETE_TESTS_ENABLED = true
 
   def running?
     return RUN_MODE if RUN_MODE.present?
