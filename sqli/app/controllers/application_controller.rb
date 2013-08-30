@@ -9,10 +9,10 @@ class ApplicationController < ActionController::Base
   CONDITION_OPTIONS_FILE = 'public/condition_options.set'
   RUN_MODE = nil # Let the system decide based on the environment
 
-  CREATE_TESTS_ENABLED = true
+  CREATE_TESTS_ENABLED = false
   READ_TESTS_ENABLED = true
-  UPDATE_TESTS_ENABLED = true
-  DELETE_TESTS_ENABLED = true
+  UPDATE_TESTS_ENABLED = false
+  DELETE_TESTS_ENABLED = false
 
   def running?
     return RUN_MODE if RUN_MODE.present?
@@ -34,7 +34,7 @@ class ApplicationController < ActionController::Base
     ActiveRecord::Base.connection.execute('TRUNCATE TABLE "all_types_objects" RESTART IDENTITY')
     ActiveRecord::Base.connection.execute('TRUNCATE TABLE "association_objects" RESTART IDENTITY')
     Rails.application.load_seed
-    end
+  end
 
   # The apply method (separated/joined) determines whether the conditions should be applied seperately (using multiple where/having method calls) or joined in a large statement (using a single where/having method call).
   # The argument type (string/list/array/hash) determines whether the arguments should be applied as a string (one large statement string with values filled in), a list (statement string followed by a list with bind variables), an array (with a statement string and bind variables) or an hash.

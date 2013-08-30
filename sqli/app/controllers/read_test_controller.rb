@@ -1,5 +1,5 @@
 class ReadTestController < ApplicationController
-  before_filter :only => [:relation_objects_perform, :relation_value_perform, :relation_by_sql_perform] { @show_last_queries = true }
+  before_filter :only => [:relation_objects_perform, :relation_value_perform, :relation_by_sql_perform, :relation_condition_option_perform] { @show_last_queries = true }
 
   FIND_SUB_METHODS = ['all', 'first', 'last']
   CALCULATE_SUB_METHODS = ['average', 'count', 'minimum', 'maximum', 'sum']
@@ -166,6 +166,33 @@ class ReadTestController < ApplicationController
     @result = AllTypesObject.send(params[:method], query)
 
     respond_with(@result)
+  end
+
+  # We want a form to read through the relation all method, using the various available condition options.
+  def relation_condition_option_form
+    # Nothing to do here
+  end
+
+  # We want to read through the relation all method, using the various available condition options.
+  def relation_condition_option_perform
+    # Build the relation depending on the various options (query methods).
+    relation = AllTypesObject.scoped
+
+    # Set the right condition options
+    @condition_options = {
+      apply_method: params[:apply_method],
+      argument_type: params[:argument_type],
+      placeholder_style: params[:argument_type_option],
+      hash_style: params[:argument_type_option]
+    }
+
+    # Apply the conditions.
+    relation = build_and_apply_conditions(relation, :where, params[:conditions])
+
+    # Perform the query using the all method (since this is one of the most general and common finder methods).
+    @all_types_objects = relation.all
+
+    respond_with(@all_types_objects)
   end
 
   # Helper functions

@@ -17,6 +17,8 @@ Sqli::Application.routes.draw do
   match "read_test/relation_value_perform/:method(/:option)", :controller => 'read_test', :action => 'relation_value_perform', :via => 'post', :as => 'read_test_relation_value_perform'
   match "read_test/relation_by_sql_form/:method(/:option)", :controller => 'read_test', :action => 'relation_by_sql_form', :via => 'get', :as => 'read_test_relation_by_sql_form'
   match "read_test/relation_by_sql_perform/:method(/:option)", :controller => 'read_test', :action => 'relation_by_sql_perform', :via => 'post', :as => 'read_test_relation_by_sql_perform'
+  match "read_test/relation_condition_option_form/:apply_method/:argument_type(/:argument_type_option)", :controller => 'read_test', :action => 'relation_condition_option_form', :via => 'get', :as => 'read_test_relation_condition_option_form'
+  match "read_test/relation_condition_option_perform/:apply_method/:argument_type(/:argument_type_option)", :controller => 'read_test', :action => 'relation_condition_option_perform', :via => 'post', :as => 'read_test_relation_condition_option_perform'
 
   # Update tests
   match "update_test/relation_edit/:method/:option", :controller => 'update_test', :action => 'relation_edit', :via => 'get', :as => 'update_test_relation_edit'
