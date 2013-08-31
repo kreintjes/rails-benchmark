@@ -14,7 +14,7 @@
     The form below can be used to change the various condition options (apply_method, argument_type, placeholder_style, hash_style).<br />
     Conditions (mostly applied using the where or having method) can be set in various ways.<br />
     The options below control these ways.<br />
-    These settings are global. They will be used for all methods using conditions.<br />
+    These settings are global. They will be used for all methods using conditions (where or having), except the condition option tests, which explicitely overwrite these options.<br />
     <div style="font-weight: bold; text-decoration: underline;">Note: make sure to disable the condition options form before running the tests. Do this by setting ApplicationController::RUN_MODE to true.</div>
   </p>
   <div class="field">
