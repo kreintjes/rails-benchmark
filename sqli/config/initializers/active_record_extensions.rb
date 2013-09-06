@@ -13,17 +13,17 @@ ActiveRecord::ConnectionAdapters::AbstractAdapter.class_eval do
       []
     rescue ActiveRecord::StatementInvalid => e
       # The query resulted in an exception. We check if the exception was something harmless that could result into a false positive. If so, we simply return an empty array as if there were no objects found.
-      if e.message.scan("PG::Error: ERROR:  invalid input syntax for type").present?
+      if e.message.scan("PG::Error: ERROR:  invalid input syntax for type")
         # Error because of invalid input syntax for some type (for example timestamp).
         logger.debug 'Automatic handled ActiveRecord::StatementInvalid error "PG::Error: ERROR:  invalid input syntax for type" to prevent false positive'
         []
-      elsif e.message.scan("PG::Error: ERROR:  date/time field value out of range").present?
+      elsif e.message.scan("PG::Error: ERROR:  date/time field value out of range")
         # Error because of out of range value for a date/time field.
         logger.debug 'Automatic handled ActiveRecord::StatementInvalid error PG::Error: ERROR:  date/time field value out of range" to prevent false positive'
         []
-      elsif e.message.scan("PG::Error: ERROR:  syntax error at or near \"DISTINCT\"\nLINE 1: SELECT  DISTINCT DISTINCT").present?
+      elsif e.message.scan("PG::Error: ERROR:  syntax error at or near \"DISTINCT\"") && e.message.scan("DISTINCT DISTINCT")
         # Error because of double DISTINCT. This happens when we set a value for uniq and limit and eager_load is has_many or has_and_belongs_to_many (Rails bug?).
-        logger.debug 'Automatic handled ActiveRecord::StatementInvalid error "PG::Error: ERROR:  syntax error at or near "DISTINCT"\nLINE 1: SELECT  DISTINCT DISTINCT" to prevent false positive'
+        logger.debug 'Automatic handled ActiveRecord::StatementInvalid error "PG::Error: ERROR:  syntax error at or near "DISTINCT" DISTINCT DISTINCT" to prevent false positive'
         []
       else
         # Unknown error. Probably we found an SQL injection. Simply raise the exception again.
