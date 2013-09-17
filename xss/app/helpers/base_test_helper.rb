@@ -1,0 +1,2 @@
+module BaseTestHelper
+end
