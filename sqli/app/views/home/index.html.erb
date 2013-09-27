@@ -6,6 +6,7 @@
   If these scanners find a security vulnerability in this application, this could very well mean there is a security vulnerability in the Rails framework itself. This is because this application uses the functionality provided by the Rails framework in the most basic way possible (thus likely not introducing a security vulnerability itself). Furthermore, it uses functionality that should be secure to use with input from untrusted source (according to the Rails api/documentation).<br />
   This benchmark module tends to be as complete as possible (using all the provided ActiveRecord functionality in all the ways possible). However, this is not always complete feasible. Therefore, some things might have been left out (for example all methods/options that are <%= link_to 'deprecated in rails 4', 'http://guides.rubyonrails.org/4_0_release_notes.html#active-record-deprecations', :target => '_blank' %> are left out). Please refer to my thesis (TODO link?) for more information.<br />
 </p>
+
 <%= render 'condition_options' %>
 
 <%= render 'tests' %>

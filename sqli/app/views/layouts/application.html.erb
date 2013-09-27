@@ -7,10 +7,10 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-<% unless running? %>
+  <% unless running? %>
   <p id="alert"><%= alert %></p>
   <p id="notice"><%= notice %></p>
-<% end %>
+  <% end %>
 
   <% if !running? && @show_last_queries && ActiveRecord::Base.connection.last_queries.present? %>
   <p><strong><underline>Last queries:</underline></strong><br />
