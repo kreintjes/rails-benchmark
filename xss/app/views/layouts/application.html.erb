@@ -7,8 +7,13 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
+  <% unless running? %>
+  <p id="alert"><%= alert %></p>
+  <p id="notice"><%= notice %></p>
+  <% end %>
 
-<%= yield %>
+  <%= yield %>
 
+  <%= link_to 'Root', root_path %>
 </body>
 </html>

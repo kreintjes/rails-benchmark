@@ -1,2 +1,7 @@
-<h1>BaseTest#sanitizers_perform</h1>
-<p>Find me in app/views/base_test/sanitizers_perform.html.erb</p>
+<h1><%= params[:controller].humanize %> - <%= params[:action].humanize %> - <%= params[:method].humanize %></h1>
+
+<p><%= @result %></p>
+
+<p>HTML Safe? <%= @result.html_safe? ? 'Yes' : 'No' %></p>
+
+<%= link_to 'Back', base_test_sanitizers_form_path(encode_method(params[:method]), params[:option]) %>
