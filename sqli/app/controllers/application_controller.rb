@@ -2,6 +2,8 @@ class ApplicationController < ActionController::Base
   #protect_from_forgery # Disabled as a precaution (it could hinder the dynamic scanners)
   respond_to :html
 
+  rescue_from StandardError, :with => :handle_exception # Safe rescue possible exceptions if needed (to prevent false positives)
+
   before_filter :set_condition_options # Set the condition option modes.
   before_filter :reset_query_log # Clear last queries.
   before_filter :parse_method
@@ -9,10 +11,11 @@ class ApplicationController < ActionController::Base
   CONDITION_OPTIONS_FILE = 'public/condition_options.set'
   RUN_MODE = nil # Let the system decide based on the environment
 
-  CREATE_TESTS_ENABLED = false
+  CREATE_TESTS_ENABLED = true
   READ_TESTS_ENABLED = true
-  UPDATE_TESTS_ENABLED = false
-  DELETE_TESTS_ENABLED = false
+  UPDATE_TESTS_ENABLED = true
+  DELETE_TESTS_ENABLED = true
+  INJECTION_TESTS_ENABLED = true
 
   def running?
     return RUN_MODE if RUN_MODE.present?
@@ -75,6 +78,48 @@ class ApplicationController < ActionController::Base
   end
   helper_method :encode_method
 
+  # This method is called upon any exception. It prevents false positives caused by exceptions that have nothing to do with an SQL injection.
+  # It checks if the exception has nothing to do with an SQL injection, but could possibly cause the scanners to see it as a false positive.
+  # If so, the exception is logged and a standard response is shown by (empty) rendering the normal controller action, so the scanners will believe all is well.
+  def handle_exception(exception)
+    if safe_rescue_exception?(exception)
+      # This exception should be safely rescued to prevent false positive for the dynamic scanners. Log the exception
+      logger.debug " Automatic handled " + exception.class.to_s + ": " + exception.message + " to prevent false positive"
+      # Try to render the normal controller action (although with empty results) as if everything is well
+      render
+    else
+      # This exception should not be safe rescued (possible SQL injection!). Simply raise the exception again to display the full error.
+      raise exception
+    end
+  end
+
+  # Do we need to safe rescue this exception?
+  def safe_rescue_exception?(exception)
+    # Exceptions to be safe rescued
+    errors = [
+      { :type => PG::UniqueViolation, :messages => ["ERROR:  duplicate key value violates unique constraint"] },
+      { :type => PG::InvalidTextRepresentation, :messages => ["ERROR:  invalid input syntax for type"] },
+      { :type => PG::InvalidDatetimeFormat, :messages => ["ERROR:  invalid input syntax for type"] },
+      { :type => PG::DatetimeFieldOverflow, :messages => ["ERROR:  date/time field value out of range"] },
+      { :type => PG::SyntaxError, :messages => ["ERROR:  syntax error at or near \"DISTINCT\"", "DISTINCT DISTINCT"] },
+      { :type => ActiveRecord::RecordNotFound, :messages => [] },
+      { :type => ActiveRecord::ConfigurationError, :messages => ["Association named", "was not found"] },
+    ]
+    errors.each do |error|
+      if exception.is_a?(error[:type])
+        match = true
+        error[:messages].each do |message|
+          unless exception.message.scan(message).present?
+            match = false
+            break
+          end
+        end
+        return true if match
+      end
+    end
+    false
+  end
+
   # Extract query methods (finder options) from params and apply them to the relation.
   def apply_query_methods(relation, params, only = nil)
     # Simple options
@@ -109,8 +154,6 @@ class ApplicationController < ActionController::Base
     # Others
     params[:create_with] = params[:create_with].reject { |k,v| v.blank? } # Remove blank values, so create_with will not be unnecessary set.
     relation = relation.create_with(params[:create_with]) if (only.nil? || only.include?(:create_with)) && params[:create_with].present?
-
-    #relation = relation.order("id'")
 
     relation
   end

@@ -30,49 +30,39 @@ class ReadTestController < ApplicationController
     relation = apply_query_methods(relation, params)
 
     # Perform the query
-    begin
-      case params[:method]
-      when "first", "last"
-        amount = params[:amount].to_i if params[:amount].present?
-        @results = relation.send(params[:method], *amount)
-      when "to_a", "all", "first!", "last!"
-        @results = relation.send(params[:method])
-      when "select"
-        @results = relation.send(params[:method]) { true } # Select with a block acts as a finder method. The block simply returns true to not futher limit the results.
-      when "find"
-        case params[:option]
-        when "sub_method"
-          raise "Unknown sub method '#{params[:sub_method]}'" unless FIND_SUB_METHODS.include?(params[:sub_method])
-          @results = relation.send(params[:method], params[:sub_method].to_sym)
-        when "single_id"
-          @results = relation.send(params[:method], params[:id])
-        when "id_list"
-          @results = relation.send(params[:method], *params[:id])
-        when "id_array"
-          @results = relation.send(params[:method], params[:id])
-        end
-      when "dynamic_find_by", "dynamic_find_by!"
-        method = "find_by_#{params[:attribute]}" + (params[:method] == "dynamic_find_by!" ? "!" : "")
-        @results = relation.send(method, params[:value])
-      when "find_each", "find_in_batches"
-        @results = []
-        options = {}
-        options[:start] = params[:start].to_i if params[:start].present?
-        options[:batch_size] = params[:batch_size].to_i if params[:batch_size].present?
-        relation.send(params[:method], options) { |results| @results << results }
-      when "first_or_initialize", "first_or_create", "first_or_create!"
-        @results = relation.send(params[:method], params[:attributes].presence)
-      else
-        raise "Unknown method '#{params[:method]}'"
+    case params[:method]
+    when "first", "last"
+      amount = params[:amount].to_i if params[:amount].present?
+      @results = relation.send(params[:method], *amount)
+    when "to_a", "all", "first!", "last!"
+      @results = relation.send(params[:method])
+    when "select"
+      @results = relation.send(params[:method]) { true } # Select with a block acts as a finder method. The block simply returns true to not futher limit the results.
+    when "find"
+      case params[:option]
+      when "sub_method"
+        raise "Unknown sub method '#{params[:sub_method]}'" unless FIND_SUB_METHODS.include?(params[:sub_method])
+        @results = relation.send(params[:method], params[:sub_method].to_sym)
+      when "single_id"
+        @results = relation.send(params[:method], params[:id])
+      when "id_list"
+        @results = relation.send(params[:method], *params[:id])
+      when "id_array"
+        @results = relation.send(params[:method], params[:id])
       end
-    rescue ActiveRecord::RecordNotFound => e
-      # Prevent false positive due to exception that the object was not found (could occur for first!, last! and find method)
+    when "dynamic_find_by", "dynamic_find_by!"
+      method = "find_by_#{params[:attribute]}" + (params[:method] == "dynamic_find_by!" ? "!" : "")
+      @results = relation.send(method, params[:value])
+    when "find_each", "find_in_batches"
       @results = []
-      if self.running?
-        logger.debug "Automatic handled ActiveRecord::RecordNotFound error to prevent false positive"
-      else
-        flash[:alert] = "Automatic handled ActiveRecord::RecordNotFound error to prevent false positive"
-      end
+      options = {}
+      options[:start] = params[:start].to_i if params[:start].present?
+      options[:batch_size] = params[:batch_size].to_i if params[:batch_size].present?
+      relation.send(params[:method], options) { |results| @results << results }
+    when "first_or_initialize", "first_or_create", "first_or_create!"
+      @results = relation.send(params[:method], params[:attributes].presence)
+    else
+      raise "Unknown method '#{params[:method]}'"
     end
 
     # Wrap the result(s) in array and flatten (since the template expects an array of results)

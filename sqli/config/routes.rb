@@ -32,4 +32,8 @@ Sqli::Application.routes.draw do
   match "delete_test/relation_form/:method/:option", :controller => 'delete_test', :action => 'relation_form', :via => 'get', :as => 'delete_test_relation_form'
   match "delete_test/relation_perform/:method/:option", :controller => 'delete_test', :action => 'relation_perform', :via => 'post', :as => 'delete_test_relation_perform'
   match "delete_test/object_remove/:id/:method", :controller => 'delete_test', :action => 'object_remove', :via => 'get', :as => 'delete_test_object_remove'
+
+  # Injection tests
+  match "injection_test/injection_form/:method", :controller => 'injection_test', :action => 'injection_form', :via => 'get', :as => 'injection_test_injection_form'
+  match "injection_test/injection_perform/:method", :controller => 'injection_test', :action => 'injection_perform', :via => 'post', :as => 'injection_test_injection_perform'
 end

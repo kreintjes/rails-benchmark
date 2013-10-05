@@ -42,9 +42,8 @@ Sqli::Application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
 
-  # Set to :debug to see everything in the log.
+  # Set log level to :fatal for faster processing of requests and only logging serious problems
   config.log_level = :fatal
-  config.logger = Logger.new('/dev/null')
 
   # Prepend all log lines with the following tags.
   # config.log_tags = [ :subdomain, :uuid ]

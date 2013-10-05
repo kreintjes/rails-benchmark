@@ -20,6 +20,11 @@ module Sqli
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
+    # Always permit all parameters (effictively disabling Strong Parameters) so we do not have to deal with allowing the parameters every time.
+    # This is no problem, since we are testing for SQLi and not Mass Assignment vulnerabilities.
     config.action_controller.permit_all_parameters = true
+
+    # Enable threaded mode for faster testing
+    #config.threadsafe! unless ENV['THREADSAFE'] == 'false'
   end
 end

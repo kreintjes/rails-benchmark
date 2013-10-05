@@ -188,3 +188,14 @@
 <h3>Delete tests disabled</h3>
 <p>Enable by setting ApplicationController::DELETE_TESTS_ENABLED to true</p>
 <% end %>
+
+<% if ApplicationController::INJECTION_TESTS_ENABLED %>
+<h3>Injection tests enabled</h3>
+<ul>
+  <li><%= link_to 'Order', injection_test_injection_form_path('order') %></li>
+</ul>
+<p>Disable by setting ApplicationController::INJECTION_TESTS_ENABLED to false</p>
+<% else %>
+<h3>Injection tests disabled</h3>
+<p>Enable by setting ApplicationController::INJECTION_TESTS_ENABLED to true</p>
+<% end %>
